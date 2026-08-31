@@ -1,0 +1,21 @@
+:root {
+  --duration-fast: 80ms;
+  --duration-normal: 140ms;
+  --duration-slow: 220ms;
+  --duration-slower: 360ms;
+  --duration-slowest: 600ms;
+
+  --ease-standard: cubic-bezier(0.2, 0.7, 0.25, 1); /* state changes */
+  --ease-out: cubic-bezier(0, 0, 0.2, 1); /* entrances */
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275); /* toasts, badge ticks */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms !important;
+    --duration-normal: 0ms !important;
+    --duration-slow: 0ms !important;
+    --duration-slower: 0ms !important;
+    --duration-slowest: 0ms !important;
+  }
+}

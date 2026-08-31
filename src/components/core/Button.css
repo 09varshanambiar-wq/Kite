@@ -1,0 +1,105 @@
+.kite-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-weight: var(--weight-medium);
+  transition: all var(--duration-fast) var(--ease-standard);
+  position: relative;
+  overflow: hidden;
+}
+
+.kite-button:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+.kite-button--inverse:focus-visible {
+  box-shadow: var(--shadow-focus-inverse);
+}
+
+.kite-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Sizes */
+.kite-button--sm {
+  height: 32px;
+  padding: 0 var(--space-4);
+  font-size: var(--text-sm);
+}
+
+.kite-button--md {
+  height: 40px;
+  padding: 0 var(--space-5);
+  font-size: var(--text-sm);
+}
+
+.kite-button--lg {
+  height: 48px;
+  padding: 0 var(--space-6);
+  font-size: var(--text-base);
+}
+
+/* Variants - Default Tone */
+.kite-button--primary.kite-button--default {
+  background-color: var(--surface-brand);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-brand);
+}
+
+.kite-button--primary.kite-button--default:hover:not(:disabled) {
+  background-color: var(--indigo-600);
+}
+
+.kite-button--primary.kite-button--default:active:not(:disabled) {
+  transform: scale(0.975);
+}
+
+.kite-button--secondary.kite-button--default {
+  background-color: var(--surface-page);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+}
+
+.kite-button--secondary.kite-button--default:hover:not(:disabled) {
+  background-color: var(--ink-200);
+}
+
+.kite-button--ghost.kite-button--default {
+  background-color: transparent;
+  color: var(--text-muted);
+}
+
+.kite-button--ghost.kite-button--default:hover:not(:disabled) {
+  background-color: var(--surface-sunken);
+  color: var(--text-primary);
+}
+
+/* Variants - Inverse Tone */
+.kite-button--primary.kite-button--inverse {
+  background-color: var(--white);
+  color: var(--text-primary);
+}
+
+.kite-button--ghost.kite-button--inverse {
+  background-color: transparent;
+  color: var(--text-inverse-muted);
+}
+
+.kite-button--ghost.kite-button--inverse:hover:not(:disabled) {
+  background-color: rgba(255,255,255,0.1);
+  color: var(--text-inverse);
+}
+
+.kite-button-spinner {
+  animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

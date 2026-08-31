@@ -1,0 +1,19 @@
+:root {
+  /* Shadows are cool-tinted */
+  --shadow-xs: 0 1px 2px rgba(11, 13, 23, 0.05); /* inputs */
+  --shadow-sm: 0 1px 3px rgba(11, 13, 23, 0.1), 0 1px 2px rgba(11, 13, 23, 0.06); /* cards */
+  --shadow-md: 0 4px 6px -1px rgba(11, 13, 23, 0.1), 0 2px 4px -1px rgba(11, 13, 23, 0.06); /* hover/dropdowns */
+  --shadow-lg: 0 10px 15px -3px rgba(11, 13, 23, 0.1), 0 4px 6px -2px rgba(11, 13, 23, 0.05); /* popovers/toasts */
+  --shadow-xl: 0 20px 25px -5px rgba(11, 13, 23, 0.1), 0 10px 10px -5px rgba(11, 13, 23, 0.04); /* modals */
+  
+  --shadow-brand: 0 4px 14px 0 rgba(28, 47, 176, 0.39);
+  
+  /* Glass */
+  --glass-blur: 14px;
+  --shadow-glass: 0 8px 32px 0 rgba(11, 13, 23, 0.1), inset 0 1px 0 0 rgba(255, 255, 255, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  --shadow-inner-soft: inset 0 0 0 1px rgba(255,255,255,0.4);
+
+  /* Focus rings */
+  --shadow-focus: 0 0 0 2px var(--surface-page), 0 0 0 5px var(--periwinkle);
+  --shadow-focus-inverse: 0 0 0 2px var(--surface-inverse), 0 0 0 5px var(--cream);
+}

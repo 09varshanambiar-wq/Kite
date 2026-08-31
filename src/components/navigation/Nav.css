@@ -1,0 +1,74 @@
+.kite-nav {
+  position: fixed;
+  top: var(--space-6);
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.kite-nav-pill {
+  background-color: var(--surface-glass-thin);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: var(--shadow-glass);
+  border-radius: 40px; /* Smooth pill shape */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 16px 32px;
+  pointer-events: auto;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  width: 100%;
+  max-width: 680px;
+  min-height: 64px;
+}
+
+.kite-nav-brand {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.kite-nav-brand .wordmark {
+  font-size: 20px;
+  color: var(--ink-950);
+}
+
+.kite-nav-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  flex: 2;
+}
+
+.kite-nav-links a {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  text-transform: capitalize;
+}
+
+.kite-nav-links a:hover {
+  color: var(--indigo-500);
+}
+
+.kite-nav-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+}
+
+.kite-nav-actions button {
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  font-size: 11px;
+  height: 36px;
+  padding: 0 24px;
+  border-radius: 36px;
+}

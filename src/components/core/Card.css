@@ -1,0 +1,49 @@
+.kite-card {
+  position: relative;
+  transition: all var(--duration-slow) var(--ease-standard);
+  overflow: hidden;
+}
+
+/* Solid */
+.kite-card--solid {
+  background-color: var(--surface-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-7);
+}
+
+.kite-card--solid.kite-card--interactive:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+  border-color: var(--border-default);
+  cursor: pointer;
+}
+
+/* Glass */
+.kite-card--glass {
+  background-color: var(--surface-glass-frost);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glass);
+  padding: var(--space-8);
+}
+
+.kite-card--glass.kite-card--interactive:hover {
+  background-color: rgba(255, 255, 255, 0.65);
+  cursor: pointer;
+}
+
+/* Outline */
+.kite-card--outline {
+  background-color: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5);
+}
+
+.kite-card--outline.kite-card--interactive:hover {
+  border-color: var(--periwinkle);
+  cursor: pointer;
+}

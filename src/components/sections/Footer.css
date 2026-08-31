@@ -1,0 +1,118 @@
+.kite-footer {
+  background-color: var(--surface-footer);
+  padding: var(--space-12) 0 var(--space-8) 0;
+  color: var(--ink-950);
+}
+
+.kite-footer-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.kite-footer-top {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-10);
+}
+
+@media (min-width: 1024px) {
+  .kite-footer-top {
+    flex-direction: row;
+    gap: var(--space-14);
+  }
+}
+
+.kite-footer-logo {
+  font-size: 80px;
+  line-height: var(--leading-none);
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .kite-footer-logo {
+    font-size: 120px;
+  }
+}
+
+.kite-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-11);
+  padding-top: var(--space-4);
+}
+
+.kite-footer-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+}
+
+.kite-footer-column a {
+  color: rgba(11, 13, 23, 0.72);
+}
+
+.kite-footer-column a:hover {
+  color: var(--ink-950);
+}
+
+.kite-footer-contact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.kite-footer-contact-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  border-bottom: 1px solid var(--ink-950);
+  padding-bottom: var(--space-2);
+  width: fit-content;
+}
+
+.kite-footer-contact p {
+  color: rgba(11, 13, 23, 0.72);
+}
+
+.kite-footer-bottom {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-6);
+  padding-top: var(--space-8);
+}
+
+@media (min-width: 768px) {
+  .kite-footer-bottom {
+    flex-direction: row;
+  }
+}
+
+.kite-footer-socials {
+  display: flex;
+  gap: var(--space-5);
+}
+
+.kite-footer-socials a {
+  color: var(--ink-950);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kite-footer-socials a:hover {
+  opacity: 0.7;
+}
+
+.kite-footer-legal {
+  color: rgba(11, 13, 23, 0.72);
+}

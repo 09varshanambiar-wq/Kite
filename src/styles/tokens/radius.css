@@ -1,0 +1,12 @@
+:root {
+  --radius-sm: 10px; /* controls */
+  --radius-md: 14px; /* media, pills */
+  --radius-lg: 20px; /* console cards */
+  --radius-xl: 28px; /* panels, modals, glass cards */
+  --radius-full: 9999px; /* full pill */
+
+  /* The Kite cut */
+  --clip-cut-tr: polygon(0 0, calc(100% - 45px) 0, 100% 45px, 100% 100%, 0 100%);
+  --clip-cut-bl: polygon(0 0, 100% 0, 100% 100%, 45px 100%, 0 calc(100% - 45px));
+  --clip-kite: var(--clip-cut-tr); /* default kite cut */
+}

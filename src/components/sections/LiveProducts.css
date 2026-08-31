@@ -1,0 +1,134 @@
+.kite-products {
+  position: relative;
+  padding: var(--space-14) 0;
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.kite-products-wash {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--wash-green);
+  z-index: -1;
+}
+
+/* Simulated organic landscape overlapping */
+.kite-products-wash::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: -10%;
+  width: 120%;
+  height: 40%;
+  background: #608F32;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  opacity: 0.2;
+}
+
+.kite-products-wash::after {
+  content: '';
+  position: absolute;
+  bottom: -10%;
+  left: -20%;
+  width: 140%;
+  height: 30%;
+  background: #4A7324;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  opacity: 0.3;
+}
+
+.kite-products-title {
+  text-align: center;
+  margin-bottom: var(--space-11);
+  color: var(--ink-950);
+}
+
+.kite-products-carousel {
+  position: relative;
+  height: 320px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: var(--space-11);
+}
+
+.kite-product-card {
+  position: absolute;
+  width: 320px;
+  height: 220px;
+  transition: transform var(--duration-slow) var(--ease-standard), opacity var(--duration-slow) var(--ease-standard);
+}
+
+.kite-product-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-4);
+}
+
+.kite-product-header h3 {
+  color: var(--ink-950);
+}
+
+.kite-product-badge {
+  background: var(--surface-brand);
+  color: var(--white);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+
+.kite-product-card--left {
+  transform: translateX(-60%) scale(0.9);
+  opacity: 0.7;
+  z-index: 1;
+}
+
+.kite-product-card--center {
+  transform: translateX(0) scale(1.1);
+  z-index: 2;
+  background-color: var(--surface-glass);
+  width: 380px;
+  height: 260px;
+}
+
+.kite-product-card--right {
+  transform: translateX(60%) scale(0.9);
+  opacity: 0.7;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .kite-products-carousel {
+    flex-direction: column;
+    height: auto;
+    gap: var(--space-6);
+  }
+  
+  .kite-product-card {
+    position: relative;
+    transform: none;
+    opacity: 1;
+    width: 100%;
+    height: auto;
+  }
+  
+  .kite-product-card--center {
+    transform: none;
+    width: 100%;
+  }
+}
+
+.kite-products-action {
+  display: flex;
+  justify-content: center;
+}

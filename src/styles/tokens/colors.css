@@ -1,0 +1,55 @@
+:root {
+  /* Core brand colors */
+  --indigo-500: #1C2FB0;
+  --indigo-600: #142180;
+  --periwinkle: #80AFFF;
+  --coral: #F37A65;
+  --cream: #FFEBC0;
+  
+  /* Ink neutrals */
+  --ink-950: #0B0D17;
+  --ink-800: #1A1C29;
+  --ink-600: #565A66; /* text muted */
+  --ink-200: #E2E4E9; /* border subtle */
+  --ink-50: #F9F9F9; /* surface page */
+  --white: #FFFFFF;
+
+  /* Surfaces */
+  --surface-page: var(--ink-50);
+  --surface-card: var(--white);
+  --surface-brand: var(--indigo-500);
+  --surface-brand-soft: rgba(28, 47, 176, 0.1);
+  --surface-footer: var(--coral);
+  --surface-inverse: var(--ink-950);
+  --surface-sunken: rgba(11, 13, 23, 0.04);
+  
+  /* Glass Surfaces (opacity handled in base or components) */
+  --glass-thin-opacity: 0.46;
+  --glass-frost-opacity: 0.58;
+  --glass-opacity: 0.72;
+  --surface-glass-thin: rgba(255, 255, 255, var(--glass-thin-opacity));
+  --surface-glass-frost: rgba(255, 255, 255, var(--glass-frost-opacity));
+  --surface-glass: rgba(255, 255, 255, var(--glass-opacity));
+
+  /* Text */
+  --text-primary: var(--ink-950);
+  --text-muted: var(--ink-600);
+  --text-inverse: var(--white);
+  --text-inverse-muted: rgba(255, 255, 255, 0.72);
+  --text-brand: var(--indigo-500);
+  
+  /* Borders */
+  --border-subtle: var(--ink-200);
+  --border-default: #C1C4CD;
+  --border-inverse: rgba(255, 255, 255, 0.24);
+
+  /* Washes */
+  --wash-dawn: radial-gradient(120% 100% at 20% 0%, #E8F0FF 0%, #FFE9E5 45%, #FFEBC0 100%);
+  --wash-green: radial-gradient(100% 100% at 50% 100%, #D8F2A0 0%, #E8F0FF 100%);
+  --wash-warm: radial-gradient(100% 100% at 50% 50%, #FFF5EB 0%, #FFE9E5 100%);
+  --wash-cool: radial-gradient(100% 100% at 50% 50%, #F4F7FF 0%, #E8F0FF 100%);
+
+  /* Gradients */
+  --gradient-sweep: linear-gradient(135deg, rgba(255,255,255,0) 0%, rgba(128,175,255,0.4) 50%, rgba(255,255,255,0) 100%);
+  --gradient-protect: linear-gradient(to top, rgba(11,13,23,0.6) 0%, rgba(11,13,23,0) 100%);
+}

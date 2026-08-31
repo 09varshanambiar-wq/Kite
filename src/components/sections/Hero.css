@@ -1,0 +1,189 @@
+.kite-hero {
+  position: relative;
+  z-index: 0;
+  min-height: 100vh;
+  padding-top: var(--space-14);
+  padding-bottom: var(--space-11);
+  display: flex;
+  align-items: center;
+}
+
+.kite-hero-wash {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('/Background.png') no-repeat center 20%;
+  background-size: cover;
+  z-index: -1;
+}
+
+.kite-hero-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-11);
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 1024px) {
+  .kite-hero-content {
+    grid-template-columns: 500px 1fr;
+    gap: var(--space-8);
+  }
+}
+
+.kite-hero-title {
+  margin-bottom: var(--space-8);
+  color: var(--ink-950);
+  font-size: var(--text-6xl);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tighter);
+}
+
+.kite-hero-title .wordmark {
+  font-size: 1.1em;
+  display: inline-block;
+  margin-bottom: var(--space-2);
+}
+
+.kite-hero-subtitle {
+  color: var(--text-muted);
+  max-width: 400px;
+  font-size: var(--text-lg);
+  margin-top: var(--space-12);
+}
+
+/* Visual ecosystem */
+.kite-hero-visual {
+  position: relative;
+  height: 750px;
+  width: 100%;
+}
+
+.kite-hero-node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  transition: all 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.kite-hero-node img {
+  width: 220px;
+  height: auto;
+  object-fit: contain;
+  transition: all 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.kite-hero-label {
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: var(--tracking-wider);
+  font-weight: var(--weight-medium);
+  color: var(--ink-950);
+  text-align: center;
+}
+
+.kite-hero-label--top {
+  font-size: 18px;
+}
+
+/* Animation Initial States (Tight Constellation) */
+.kite-hero-visual:not(.is-scattered) .kite-hero-node {
+  opacity: 0;
+  transform: translate(-50%, -10%) scale(0.5) !important;
+}
+
+.kite-hero-visual:not(.is-scattered) .kite-hero-node img {
+  width: 130px !important;
+}
+
+/* Cluster Positions */
+.kite-hero-visual:not(.is-scattered) .kite-hero-node--random { top: 30% !important; left: 45% !important; }
+.kite-hero-visual:not(.is-scattered) .kite-hero-node--superconnectors { top: 30% !important; left: 55% !important; }
+.kite-hero-visual:not(.is-scattered) .kite-hero-node--specialagents { top: 40% !important; left: 40% !important; }
+.kite-hero-visual:not(.is-scattered) .kite-hero-node--simulation { top: 40% !important; left: 60% !important; }
+.kite-hero-visual:not(.is-scattered) .kite-hero-node--voice { top: 48% !important; left: 50% !important; }
+
+/* Staggered Visibility (Fade in and float up) */
+.kite-hero-visual.show-1 .kite-hero-node--random,
+.kite-hero-visual.show-2 .kite-hero-node--random,
+.kite-hero-visual.show-3 .kite-hero-node--random,
+.kite-hero-visual.show-4 .kite-hero-node--random,
+.kite-hero-visual.show-5 .kite-hero-node--random { opacity: 1; transform: translate(-50%, -50%) scale(0.7) !important; }
+
+.kite-hero-visual.show-2 .kite-hero-node--superconnectors,
+.kite-hero-visual.show-3 .kite-hero-node--superconnectors,
+.kite-hero-visual.show-4 .kite-hero-node--superconnectors,
+.kite-hero-visual.show-5 .kite-hero-node--superconnectors { opacity: 1; transform: translate(-50%, -50%) scale(0.7) !important; }
+
+.kite-hero-visual.show-3 .kite-hero-node--specialagents,
+.kite-hero-visual.show-4 .kite-hero-node--specialagents,
+.kite-hero-visual.show-5 .kite-hero-node--specialagents { opacity: 1; transform: translate(-50%, -50%) scale(0.7) !important; }
+
+.kite-hero-visual.show-4 .kite-hero-node--simulation,
+.kite-hero-visual.show-5 .kite-hero-node--simulation { opacity: 1; transform: translate(-50%, -50%) scale(0.7) !important; }
+
+.kite-hero-visual.show-5 .kite-hero-node--voice { opacity: 1; transform: translate(-50%, -50%) scale(0.7) !important; }
+
+.kite-hero-visual.is-scattered .kite-hero-node {
+  opacity: 1 !important;
+  transform: translate(-50%, -50%); /* Removed !important so inline scroll parallax can override this */
+}
+
+/* Positions based on Mathematical Radial Distribution (Equidistant Ellipse) */
+.kite-hero-node--random {
+  top: 15%;
+  left: 32%;
+  z-index: 1;
+}
+
+.kite-hero-node--random img {
+  width: 220px;
+}
+
+.kite-hero-node--superconnectors {
+  top: 15%;
+  left: 68%;
+  z-index: 1;
+}
+
+.kite-hero-node--superconnectors img {
+  width: 260px;
+  clip-path: inset(0 0 12% 0);
+  margin-bottom: -10%;
+}
+
+.kite-hero-node--specialagents {
+  top: 45%;
+  left: 20%;
+  z-index: 2;
+}
+
+.kite-hero-node--specialagents img {
+  width: 300px;
+}
+
+.kite-hero-node--simulation {
+  top: 45%;
+  left: 80%;
+  z-index: 2;
+}
+
+.kite-hero-node--simulation img {
+  width: 300px;
+}
+
+.kite-hero-node--voice {
+  top: 75%;
+  left: 50%;
+  z-index: 3;
+}
+
+.kite-hero-node--voice img {
+  width: 440px;
+}

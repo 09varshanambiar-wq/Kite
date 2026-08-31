@@ -1,0 +1,58 @@
+.kite-intro {
+  position: relative;
+  padding: var(--space-14) 0;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+}
+
+.kite-intro-wash {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--wash-warm);
+  z-index: -1;
+  opacity: 0.5;
+}
+
+.kite-intro-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-10);
+}
+
+@media (min-width: 768px) {
+  .kite-intro-content {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-14);
+  }
+}
+
+.kite-intro-left h2 {
+  margin-bottom: var(--space-4);
+  color: var(--ink-950);
+}
+
+.kite-intro-desc {
+  color: var(--text-muted);
+  max-width: 320px;
+}
+
+.kite-intro-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.kite-intro-right p {
+  max-width: 380px;
+  color: var(--text-muted);
+}
+
+.kite-intro-eyebrow {
+  margin-bottom: var(--space-4);
+}
