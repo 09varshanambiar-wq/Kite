@@ -1,0 +1,75 @@
+.voice-island {
+  width: 100%;
+  height: auto;
+  animation: vi-float 5s ease-in-out infinite;
+}
+
+.voice-island-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+@keyframes vi-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.vi-bubble {
+  animation: vi-bubble-drift 5s ease-in-out infinite;
+  transform-origin: 232px 112px;
+}
+
+@keyframes vi-bubble-drift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.vi-bar {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: vi-bar-pulse 1.1s ease-in-out infinite;
+}
+
+.vi-bar-1 { animation-delay: 0s; }
+.vi-bar-2 { animation-delay: 0.15s; }
+.vi-bar-3 { animation-delay: 0.3s; }
+
+@keyframes vi-bar-pulse {
+  0%, 100% { transform: scaleY(0.6); }
+  50% { transform: scaleY(1); }
+}
+
+.vi-cloud {
+  animation: vi-cloud-drift 9s ease-in-out infinite;
+}
+
+.vi-cloud-a { animation-duration: 10s; }
+.vi-cloud-b { animation-duration: 12s; animation-delay: -3s; }
+
+@keyframes vi-cloud-drift {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(8px); }
+}
+
+.vi-plane {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: vi-plane-bob 4s ease-in-out infinite;
+}
+
+@keyframes vi-plane-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-3px) rotate(-2deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voice-island,
+  .vi-bubble,
+  .vi-bar,
+  .vi-cloud,
+  .vi-plane {
+    animation: none;
+  }
+}

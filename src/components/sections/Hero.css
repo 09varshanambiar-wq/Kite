@@ -98,7 +98,8 @@
   transform: translate(-50%, -10%) scale(0.5) !important;
 }
 
-.kite-hero-visual:not(.is-scattered) .kite-hero-node img {
+.kite-hero-visual:not(.is-scattered) .kite-hero-node img,
+.kite-hero-visual:not(.is-scattered) .kite-hero-node .voice-island {
   width: 130px !important;
 }
 
@@ -184,6 +185,7 @@
   z-index: 3;
 }
 
-.kite-hero-node--voice img {
+.kite-hero-node--voice img,
+.kite-hero-node--voice .voice-island {
   width: 440px;
 }

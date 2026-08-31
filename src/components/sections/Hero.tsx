@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Hero.css';
 import { Button } from '../core/Button';
+import { VoiceIntelligenceIsland } from '../illustrations/VoiceIntelligenceIsland';
 
 export function Hero() {
   const [animStage, setAnimStage] = useState(0);
@@ -105,7 +106,7 @@ export function Hero() {
           </div>
           
           <div className="kite-hero-node kite-hero-node--voice">
-            <img src="/Voiceintelligence.png" alt="Voice Intelligence" />
+            <VoiceIntelligenceIsland />
             <span className="kite-hero-label">Voice Intelligence</span>
           </div>
         </div>
