@@ -2,8 +2,8 @@
   position: relative;
   z-index: 0;
   min-height: 100vh;
-  padding-top: var(--space-14);
-  padding-bottom: var(--space-11);
+  padding-top: var(--space-11);
+  padding-bottom: var(--space-9);
   display: flex;
   align-items: center;
 }
@@ -14,67 +14,83 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: url('/Background.png') no-repeat center 20%;
+  background: url('/Background try.png') no-repeat center 30%;
   background-size: cover;
   z-index: -1;
 }
 
 .kite-hero-content {
+  width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: var(--space-11);
+  gap: var(--space-9);
   position: relative;
   z-index: 1;
-  text-align: center;
 }
 
-.kite-hero-text {
-  max-width: 720px;
-}
-
-.kite-hero-title {
-  margin-bottom: var(--space-8);
-  color: var(--ink-950);
-  font-size: var(--text-6xl);
-  line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-tighter);
-}
-
-.kite-hero-title .wordmark {
-  font-size: 1.1em;
-  display: inline-block;
-  margin-bottom: var(--space-2);
-}
-
-.kite-hero-subtitle {
-  color: var(--text-muted);
-  max-width: 400px;
-  margin-left: auto;
-  margin-right: auto;
-  font-size: var(--text-lg);
-  margin-top: var(--space-12);
-}
-
-/* Motion row: the three looping illustrations, side by side, never overlapping */
+/* Motion row: the hero's visual anchor. All three share one height so a
+   tall silhouette (the funnel) doesn't dominate a wide one (the magnet). */
 .kite-hero-motions {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: var(--space-10);
+  gap: var(--space-11);
   width: 100%;
 }
 
 .kite-hero-motion {
-  flex: 0 1 320px;
+  flex: 0 1 340px;
+  height: 220px;
   display: flex;
+  align-items: center;
   justify-content: center;
 }
 
 .kite-hero-motion img {
-  width: 100%;
-  max-width: 320px;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
   height: auto;
   display: block;
+}
+
+/* Copy row: headline and body grounded together at the base of the hero,
+   split asymmetrically so the two pieces of text balance each other rather
+   than stacking as one centered block. */
+.kite-hero-copy-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--space-11);
+  flex-wrap: wrap;
+}
+
+.kite-hero-title {
+  flex: 1 1 520px;
+  max-width: 640px;
+  margin: 0;
+  color: var(--ink-950);
+  font-size: clamp(2rem, 1.1rem + 2.6vw, 3.375rem);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tighter);
+}
+
+.kite-hero-subtitle {
+  flex: 0 1 380px;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: clamp(1.0625rem, 0.9rem + 0.5vw, 1.375rem);
+  line-height: var(--leading-snug);
+}
+
+@media (max-width: 860px) {
+  .kite-hero-copy-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .kite-hero-subtitle {
+    max-width: 480px;
+  }
 }
