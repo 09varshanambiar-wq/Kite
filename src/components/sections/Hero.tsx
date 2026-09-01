@@ -18,13 +18,13 @@ export function Hero() {
 
         <div className="kite-hero-motions">
           <div className="kite-hero-motion">
-            <img src="/motion-magnet.gif" alt="Magnet attracting scattered data" />
+            <img src="/scene1-magnet_2.gif" alt="Magnet attracting scattered data" />
           </div>
           <div className="kite-hero-motion">
-            <img src="/motion-voice.gif" alt="Voice signal forming a pattern" />
+            <img src="/scene2-voice_1.gif" alt="Voice signal forming a pattern" />
           </div>
           <div className="kite-hero-motion">
-            <img src="/motion-funnel.gif" alt="Data funnelling into a single stream" />
+            <img src="/scene3-funnel_1.gif" alt="Data funnelling into a single stream" />
           </div>
         </div>
       </div>
