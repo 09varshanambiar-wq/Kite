@@ -9,12 +9,15 @@ export function Hero() {
         <div className="kite-hero-motions">
           <div className="kite-hero-motion">
             <img src="/scene1-magnet_2.gif" alt="Magnet attracting scattered data" />
+            <span className="kite-hero-motion-label">Real-time intelligence</span>
           </div>
           <div className="kite-hero-motion">
             <img src="/scene2-voice_1.gif" alt="Voice signal forming a pattern" />
+            <span className="kite-hero-motion-label">Voice intelligence</span>
           </div>
           <div className="kite-hero-motion">
             <img src="/scene3-funnel_1.gif" alt="Data funnelling into a single stream" />
+            <span className="kite-hero-motion-label">Long form reasoning</span>
           </div>
         </div>
 
