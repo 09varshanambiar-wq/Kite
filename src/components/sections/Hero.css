@@ -2,10 +2,10 @@
   position: relative;
   z-index: 0;
   min-height: 100vh;
-  padding-top: var(--space-11);
-  padding-bottom: var(--space-9);
+  padding-top: var(--space-14);
+  padding-bottom: var(--space-11);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .kite-hero-wash {
@@ -22,36 +22,55 @@
 .kite-hero-content {
   width: 100%;
   display: flex;
-  flex-direction: column;
-  gap: var(--space-9);
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-11);
   position: relative;
   z-index: 1;
 }
 
-/* Motion row: the hero's visual anchor. All three share one height so a
-   tall silhouette (the funnel) doesn't dominate a wide one (the magnet). */
+/* Text block: headline and body, anchored near the top of the hero. */
+.kite-hero-text {
+  flex: 1 1 480px;
+  max-width: 640px;
+}
+
+.kite-hero-title {
+  margin: 0 0 var(--space-6);
+  color: var(--ink-950);
+  font-size: clamp(2rem, 1.1rem + 2.6vw, 3.375rem);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tighter);
+}
+
+.kite-hero-subtitle {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: clamp(1.0625rem, 0.9rem + 0.5vw, 1.375rem);
+  line-height: var(--leading-snug);
+  max-width: 440px;
+}
+
+/* Motion stack: the three illustrations, right-aligned, one below another. */
 .kite-hero-motions {
+  flex: 0 0 auto;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: flex-end;
-  gap: var(--space-9);
-  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-8);
 }
 
 .kite-hero-motion {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-5);
+  gap: var(--space-4);
 }
 
 .kite-hero-motion img {
-  /* Scales with viewport but is capped so the row of three never exceeds
-     the container width (the funnel is near-square, the other two are
-     wide, so height — not width — is the shared, size-controlling axis). */
-  height: clamp(170px, 14vw, 245px);
-  width: auto;
+  width: clamp(220px, 22vw, 320px);
+  height: auto;
   max-width: 100%;
   object-fit: contain;
   display: block;
@@ -67,42 +86,20 @@
   text-shadow: 0 1px 3px rgba(11, 13, 23, 0.35), 0 2px 16px rgba(11, 13, 23, 0.22);
 }
 
-/* Copy row: headline and body grounded together at the base of the hero,
-   split asymmetrically so the two pieces of text balance each other rather
-   than stacking as one centered block. */
-.kite-hero-copy-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: var(--space-11);
-  flex-wrap: wrap;
-}
-
-.kite-hero-title {
-  flex: 1 1 520px;
-  max-width: 640px;
-  margin: 0;
-  color: var(--ink-950);
-  font-size: clamp(2rem, 1.1rem + 2.6vw, 3.375rem);
-  line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-tighter);
-}
-
-.kite-hero-subtitle {
-  flex: 0 1 380px;
-  margin: 0;
-  color: var(--text-muted);
-  font-size: clamp(1.0625rem, 0.9rem + 0.5vw, 1.375rem);
-  line-height: var(--leading-snug);
-}
-
 @media (max-width: 860px) {
-  .kite-hero-copy-row {
+  .kite-hero-content {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    text-align: center;
+  }
+
+  .kite-hero-text {
+    max-width: 560px;
   }
 
   .kite-hero-subtitle {
     max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
