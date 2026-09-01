@@ -15,6 +15,18 @@ export function Hero() {
             From custom simulated worlds to real-time intelligence that can learn, adapt and evolve within them.
           </p>
         </div>
+
+        <div className="kite-hero-motions">
+          <div className="kite-hero-motion">
+            <img src="/motion-magnet.gif" alt="Magnet attracting scattered data" />
+          </div>
+          <div className="kite-hero-motion">
+            <img src="/motion-voice.gif" alt="Voice signal forming a pattern" />
+          </div>
+          <div className="kite-hero-motion">
+            <img src="/motion-funnel.gif" alt="Data funnelling into a single stream" />
+          </div>
+        </div>
       </div>
     </section>
   );

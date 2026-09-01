@@ -20,19 +20,17 @@
 }
 
 .kite-hero-content {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-11);
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  gap: var(--space-11);
   position: relative;
   z-index: 1;
+  text-align: center;
 }
 
-@media (min-width: 1024px) {
-  .kite-hero-content {
-    grid-template-columns: 500px 1fr;
-    gap: var(--space-8);
-  }
+.kite-hero-text {
+  max-width: 720px;
 }
 
 .kite-hero-title {
@@ -52,8 +50,33 @@
 .kite-hero-subtitle {
   color: var(--text-muted);
   max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
   font-size: var(--text-lg);
   margin-top: var(--space-12);
+}
+
+/* Motion row: the three looping illustrations, side by side, never overlapping */
+.kite-hero-motions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+  gap: var(--space-8);
+  width: 100%;
+}
+
+.kite-hero-motion {
+  flex: 0 1 260px;
+  display: flex;
+  justify-content: center;
+}
+
+.kite-hero-motion img {
+  width: 100%;
+  max-width: 260px;
+  height: auto;
+  display: block;
 }
 
 /* Visual ecosystem */
