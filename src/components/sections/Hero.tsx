@@ -49,8 +49,10 @@ export function Hero() {
               <div className="kite-capability-media">
                 <img src={capability.src} alt={capability.alt} />
               </div>
-              <h2 className="kite-capability-label">{capability.label}</h2>
-              <p className="kite-capability-blurb">{capability.blurb}</p>
+              <div className="kite-capability-body">
+                <h2 className="kite-capability-label">{capability.label}</h2>
+                <p className="kite-capability-blurb">{capability.blurb}</p>
+              </div>
             </li>
           ))}
         </ul>
