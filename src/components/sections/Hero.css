@@ -3,9 +3,9 @@
   z-index: 0;
   min-height: 100vh;
   padding-top: var(--space-14);
-  padding-bottom: var(--space-11);
+  padding-bottom: var(--space-10);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .kite-hero-wash {
@@ -22,84 +22,137 @@
 .kite-hero-content {
   width: 100%;
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--space-11);
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(var(--space-10), 6vh, var(--space-12));
   position: relative;
   z-index: 1;
 }
 
-/* Text block: headline and body, anchored near the top of the hero. */
-.kite-hero-text {
-  flex: 1 1 480px;
-  max-width: 640px;
+/* ---- Statement: the thesis, on a stable centered axis ---- */
+.kite-hero-statement {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 720px;
 }
 
 .kite-hero-title {
-  margin: 0 0 var(--space-6);
+  margin: 0;
   color: var(--ink-950);
   font-size: clamp(2rem, 1.1rem + 2.6vw, 3.375rem);
   line-height: var(--leading-tight);
   letter-spacing: var(--tracking-tighter);
+  text-wrap: balance;
 }
 
 .kite-hero-subtitle {
-  margin: 0;
+  margin: var(--space-6) 0 0;
+  max-width: 46ch;
   color: var(--text-muted);
-  font-size: clamp(1.0625rem, 0.9rem + 0.5vw, 1.375rem);
+  font-size: clamp(1.0625rem, 0.9rem + 0.4vw, 1.25rem);
   line-height: var(--leading-snug);
-  max-width: 440px;
 }
 
-/* Motion stack: the three illustrations, right-aligned, one below another. */
-.kite-hero-motions {
-  flex: 0 0 auto;
+.kite-hero-action {
+  margin-top: var(--space-8);
+}
+
+/* ---- Capabilities: three peers, so three equal cards ---- */
+.kite-hero-capabilities {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: var(--space-7);
+}
+
+.kite-capability {
+  flex: 1 1 260px;
+  min-width: 0;
+  max-width: 360px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-8);
+  text-align: center;
+  padding: var(--space-7) var(--space-7) var(--space-8);
+
+  /* Matches the glass conventions in Card.css */
+  background-color: var(--surface-glass-frost);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glass);
 }
 
-.kite-hero-motion {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-4);
+/* Media well: an identical frame per card is what makes three very
+   different aspect ratios read as one composed row. Each animation
+   fills the frame and letterboxes itself inside it. */
+.kite-capability-media {
+  width: 100%;
+  height: clamp(130px, 13vw, 180px);
 }
 
-.kite-hero-motion img {
-  width: clamp(220px, 22vw, 320px);
-  height: auto;
-  max-width: 100%;
+.kite-capability-media img {
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   display: block;
 }
 
-.kite-hero-motion-label {
-  color: #FFFFFF;
+.kite-capability-label {
+  margin: var(--space-6) 0 0;
+  color: var(--ink-950);
   font-family: var(--font-display);
-  font-size: var(--text-base);
+  font-size: var(--text-lg);
   font-weight: var(--weight-medium);
-  letter-spacing: var(--tracking-wide);
-  text-align: center;
-  text-shadow: 0 1px 3px rgba(11, 13, 23, 0.35), 0 2px 16px rgba(11, 13, 23, 0.22);
+  letter-spacing: var(--tracking-tight);
 }
 
-@media (max-width: 860px) {
-  .kite-hero-content {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+.kite-capability-blurb {
+  margin: var(--space-3) 0 0;
+  max-width: 30ch;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+}
+
+/* ---- Entrance: statement first, then the proof beneath it ---- */
+@media (prefers-reduced-motion: no-preference) {
+  .kite-hero-statement,
+  .kite-capability {
+    animation: kite-hero-rise var(--duration-slowest) var(--ease-out) both;
   }
 
-  .kite-hero-text {
-    max-width: 560px;
+  .kite-capability:nth-child(1) { animation-delay: 160ms; }
+  .kite-capability:nth-child(2) { animation-delay: 260ms; }
+  .kite-capability:nth-child(3) { animation-delay: 360ms; }
+}
+
+@keyframes kite-hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 760px) {
+  .kite-hero {
+    padding-top: var(--space-13);
   }
 
-  .kite-hero-subtitle {
-    max-width: 480px;
-    margin-left: auto;
-    margin-right: auto;
+  .kite-capability {
+    flex-basis: 100%;
+    max-width: 420px;
   }
 }
