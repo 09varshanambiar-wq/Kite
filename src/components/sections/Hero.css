@@ -68,7 +68,7 @@
   margin: 0;
   padding: 0;
   width: 100%;
-  max-width: 1060px;
+  max-width: 1200px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(var(--space-8), 4vw, var(--space-11));
@@ -85,7 +85,7 @@
    frame and letterboxes itself inside it. */
 .kite-capability-media {
   width: 100%;
-  height: clamp(150px, 15vw, 215px);
+  height: clamp(170px, 17vw, 250px);
 }
 
 .kite-capability-media img {
