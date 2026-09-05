@@ -1,41 +1,29 @@
+/* The hero is one sky: warm cream at the top for the type, with the
+   scene bleeding edge to edge along the bottom. */
 .kite-hero {
   position: relative;
   z-index: 0;
+  overflow: hidden;
   min-height: 100vh;
   padding-top: var(--space-14);
-  padding-bottom: var(--space-10);
+  /* Reserve the sky above the scene for the type. Tracks the scene's
+     own 37.5vw height, minus the transparent upper sky the copy can
+     safely sit over. */
+  padding-bottom: clamp(300px, 30vw, 560px);
   display: flex;
-  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(180deg, #FBF6EA 0%, #F7F1E3 42%, #F3EEDF 100%);
 }
 
-.kite-hero-wash {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: url('/Background try.png') no-repeat center 30%;
-  background-size: cover;
-  z-index: -1;
-}
-
-.kite-hero-content {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: clamp(var(--space-10), 6vh, var(--space-12));
+.kite-hero-statement {
   position: relative;
   z-index: 1;
-}
-
-/* ---- Statement: the thesis, on a stable centered axis ---- */
-.kite-hero-statement {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  max-width: 720px;
+  max-width: 760px;
 }
 
 .kite-hero-title {
@@ -59,99 +47,9 @@
   margin-top: var(--space-8);
 }
 
-/* ---- Capabilities: three peers on a strict shared grid.
-   No surfaces — a hairline rule under each animation acts as the
-   shelf the labels hang from, so the triad is held together by
-   alignment and rhythm instead of by cards. ---- */
-.kite-hero-capabilities {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  max-width: 1200px;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(var(--space-8), 4vw, var(--space-11));
-}
-
-.kite-capability {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-/* An identical frame per column is what makes three very different
-   aspect ratios read as one composed row. Each animation fills its
-   frame and letterboxes itself inside it. */
-.kite-capability-media {
-  width: 100%;
-  height: clamp(170px, 17vw, 250px);
-}
-
-.kite-capability-media img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  /* Narrower art (the funnel) aligns to the same left spine as the
-     rule and the label, rather than floating centred above them. */
-  object-position: left center;
-  display: block;
-}
-
-.kite-capability-body {
-  margin-top: var(--space-6);
-  padding-top: var(--space-5);
-  border-top: 1px solid rgba(28, 47, 176, 0.22);
-}
-
-.kite-capability-label {
-  margin: 0;
-  color: var(--ink-950);
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
-  font-weight: var(--weight-medium);
-  letter-spacing: var(--tracking-tight);
-}
-
-.kite-capability-blurb {
-  margin: var(--space-3) 0 0;
-  max-width: 32ch;
-  color: var(--text-muted);
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  line-height: var(--leading-normal);
-}
-
-/* ---- Entrance: statement first, then the proof beneath it ---- */
-@media (prefers-reduced-motion: no-preference) {
-  .kite-hero-statement,
-  .kite-capability {
-    animation: kite-hero-rise var(--duration-slowest) var(--ease-out) both;
-  }
-
-  .kite-capability:nth-child(1) { animation-delay: 160ms; }
-  .kite-capability:nth-child(2) { animation-delay: 260ms; }
-  .kite-capability:nth-child(3) { animation-delay: 360ms; }
-}
-
-@keyframes kite-hero-rise {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 @media (max-width: 760px) {
   .kite-hero {
     padding-top: var(--space-13);
-  }
-
-  .kite-hero-capabilities {
-    grid-template-columns: minmax(0, 1fr);
-    max-width: 420px;
+    padding-bottom: clamp(240px, 40vh, 340px);
   }
 }

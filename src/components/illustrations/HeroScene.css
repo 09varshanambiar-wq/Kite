@@ -1,0 +1,158 @@
+.kite-scene {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  /* The viewBox is 1600x600, so 37.5vw matches the artwork's own
+     aspect. Holding that ratio means the scene crops at the SIDES
+     (an intentional bleed) instead of slicing the kites off the top. */
+  height: clamp(340px, 37.5vw, 720px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.kite-scene-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Every animated node transforms about its own box, so the origins
+   declared inline stay meaningful regardless of viewBox scaling. */
+.ks-cloud,
+.ks-kite,
+.ks-tail,
+.ks-hang,
+.ks-anemo,
+.ks-windsock,
+.ks-pinwheel,
+.ks-bubble,
+.ks-runner,
+.ks-dog,
+.ks-grass {
+  will-change: transform;
+}
+
+/* ---- clouds drift ---- */
+.ks-cloud {
+  animation: ks-drift 34s ease-in-out infinite;
+}
+.ks-cloud--b {
+  animation-duration: 46s;
+  animation-delay: -12s;
+}
+@keyframes ks-drift {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(38px); }
+}
+
+/* ---- kites ride the wind ---- */
+.ks-kite {
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+  animation: ks-sway 7s ease-in-out infinite;
+}
+.ks-kite--lead { animation-duration: 9s; }
+.ks-kite--a { animation-duration: 6.2s; animation-delay: -1.4s; }
+.ks-kite--b { animation-duration: 7.6s; animation-delay: -3s; }
+.ks-kite--c { animation-duration: 8.4s; animation-delay: -2.2s; }
+@keyframes ks-sway {
+  0%, 100% { transform: rotate(-3deg) translateY(0); }
+  50% { transform: rotate(3.5deg) translateY(-10px); }
+}
+
+/* tails whip a little more than the kite body */
+.ks-tail {
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+  animation: ks-whip 3.2s ease-in-out infinite;
+}
+@keyframes ks-whip {
+  0%, 100% { transform: rotate(-7deg); }
+  50% { transform: rotate(7deg); }
+}
+
+/* ---- display kites nudge on their rack ---- */
+.ks-hang {
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+  animation: ks-nudge 5.4s ease-in-out infinite;
+}
+.ks-hang--2 { animation-duration: 6.6s; animation-delay: -1.8s; }
+.ks-hang--3 { animation-duration: 7.4s; animation-delay: -3.4s; }
+@keyframes ks-nudge {
+  0%, 100% { transform: rotate(-2.5deg); }
+  50% { transform: rotate(2.5deg); }
+}
+
+/* ---- instruments read the wind ---- */
+.ks-anemo {
+  animation: ks-spin 3.6s linear infinite;
+}
+.ks-pinwheel {
+  animation: ks-spin 2.4s linear infinite;
+}
+.ks-pinwheel--b { animation-duration: 3.4s; animation-direction: reverse; }
+@keyframes ks-spin {
+  to { transform: rotate(360deg); }
+}
+
+.ks-windsock {
+  animation: ks-flutter 4.4s ease-in-out infinite;
+}
+@keyframes ks-flutter {
+  0%, 100% { transform: rotate(-4deg) scaleX(0.97); }
+  50% { transform: rotate(3deg) scaleX(1); }
+}
+
+/* ---- conversation: the bubbles take turns, never together ---- */
+.ks-bubble {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: ks-talk 5.2s ease-in-out infinite;
+}
+.ks-bubble--b { animation-delay: -2.6s; }
+@keyframes ks-talk {
+  0%, 44%, 100% { opacity: 0; transform: scale(0.7); }
+  8%, 36% { opacity: 1; transform: scale(1); }
+}
+
+/* ---- the runner bobs, the dog trots after them ---- */
+.ks-runner {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: ks-bob 1.5s ease-in-out infinite;
+}
+@keyframes ks-bob {
+  0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+  50% { transform: translateY(-7px) rotate(1.5deg); }
+}
+
+.ks-dog {
+  animation: ks-trot 6.5s ease-in-out infinite;
+}
+@keyframes ks-trot {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  25% { transform: translateX(-26px) translateY(-3px); }
+  50% { transform: translateX(-52px) translateY(0); }
+  75% { transform: translateX(-26px) translateY(-3px); }
+}
+
+/* ---- grass leans in the same wind ---- */
+.ks-grass {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: ks-lean 6s ease-in-out infinite;
+}
+@keyframes ks-lean {
+  0%, 100% { transform: skewX(-3deg); }
+  50% { transform: skewX(3deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kite-scene * {
+    animation: none !important;
+  }
+  .ks-bubble { opacity: 1; }
+}
