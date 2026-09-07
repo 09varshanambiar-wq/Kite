@@ -69,8 +69,13 @@ const SCENES = {
     tail. The wind is visibly blowing from the left: grass, flowers, trees and
     ribbons all lean and stream to the right.
 
-    Do NOT draw any birds, and do NOT draw any speech or chat bubbles —
-    those are added separately.`,
+    IMPORTANT OMISSIONS — these are composited in afterwards as animated
+    layers, so the plate must not contain them: NO birds, NO speech or chat
+    bubbles, NO kites flying in the sky (the sky holds only faint wisps), NO
+    windsock and NO windsock pole, and NO running child with a kite line.
+    Keep the anemometer mast out too. Everything else — the giant wheel, the
+    market cart, the kite rack and its keeper, the seated couple, the walking
+    couple, the bench, the dog, the trees and the flowers — stays.`,
 
   desk: `A calm home workspace on a wooden desk, seen as a small diorama island.
     One stylised person seated, mid-conversation, a mug beside them. A monitor
@@ -215,6 +220,24 @@ export async function resolveGeminiModel(key, wanted) {
   return ids.slice().sort((a, b) => scoreModelId(b, wantsPro) - scoreModelId(a, wantsPro))[0];
 }
 
+/* The image models return JPEG, not PNG, so the file is written with
+   the extension that matches its actual bytes rather than a assumed
+   .png that merely happens to render because browsers sniff content. */
+function extensionFor(payload) {
+  const parts = payload.candidates?.[0]?.content?.parts ?? [];
+  for (const part of parts) {
+    const mime = (part.inlineData ?? part.inline_data)?.mimeType ?? (part.inlineData ?? part.inline_data)?.mime_type;
+    if (mime === 'image/jpeg') return 'jpg';
+    if (mime === 'image/webp') return 'webp';
+    if (mime) return 'png';
+  }
+  const msg = payload.choices?.[0]?.message;
+  const url = msg?.images?.[0]?.image_url?.url ?? '';
+  if (url.startsWith('data:image/jpeg')) return 'jpg';
+  if (url.startsWith('data:image/webp')) return 'webp';
+  return 'png';
+}
+
 function extractImage(payload) {
   // OpenRouter chat-completions shape
   const msg = payload.choices?.[0]?.message;
@@ -283,10 +306,11 @@ async function generate(key, model, scene, provider) {
     return;
   }
 
-  const out = resolve(ROOT, 'public', `hero-${scene}.png`);
+  const ext = extensionFor(payload);
+  const out = resolve(ROOT, 'public', `hero-${scene}.${ext}`);
   await mkdir(dirname(out), { recursive: true });
   await writeFile(out, buf);
-  console.log(`saved public/hero-${scene}.png (${(buf.length / 1024).toFixed(0)} KB)`);
+  console.log(`saved public/hero-${scene}.${ext} (${(buf.length / 1024).toFixed(0)} KB)`);
 }
 
 /* Only run the CLI when invoked directly, so the module stays

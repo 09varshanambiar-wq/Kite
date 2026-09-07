@@ -1,18 +1,18 @@
 import './HeroPlate.css';
 
 /*
- * The hero illustration: a generated plate with an animated layer on top.
+ * The hero illustration: a generated plate with generated sprites and an
+ * SVG layer composited over it, so the scene can actually move.
  *
- * The plate comes from Gemini's Nano Banana Pro (gemini-3-pro-image) via
- * the style contract in scripts/generate-hero-art.mjs. It carries the
- * things that need render quality and hold still — the giant wheel, the
- * kite shop and its keeper, the crowd, and the wind-swept grass.
+ * The plate (public/hero-festival.jpg) is deliberately generated WITHOUT
+ * the kites, windsock and running child — see scripts/generate-hero-art.mjs.
+ * Those arrive separately as transparent sprites from
+ * scripts/generate-sprites.mjs, which generates each on a magenta
+ * background and keys it out, because the image models return JPEG and
+ * JPEG carries no alpha channel.
  *
- * Everything that needs to MOVE is drawn over it as SVG, because a
- * bitmap cannot animate: the birds, the couple's conversation, and the
- * wind itself. The overlay shares the plate's 1584x672 coordinate space
- * and the same slice behaviour as the image's object-fit, so the two
- * stay registered at any width.
+ * Everything is placed in percentages of the plate's own 1584x672 frame,
+ * so the composite stays registered at any width.
  */
 
 const BIRDS_A = [
@@ -26,6 +26,22 @@ const BIRDS_B = [
   { x: 0, y: 0, s: 0.86 },
   { x: 30, y: 12, s: 0.7 },
   { x: 56, y: -6, s: 0.58 },
+];
+
+/** Foreground stems that lean with the same wind as everything else. */
+const STEM_BASE = 668;
+const STEMS = [
+  { x: 60, h: 74, petal: '#E07A5F' },
+  { x: 152, h: 56, petal: null },
+  { x: 266, h: 66, petal: '#E8B84B' },
+  { x: 372, h: 48, petal: null },
+  { x: 700, h: 60, petal: '#E07A5F' },
+  { x: 820, h: 72, petal: '#F0A088' },
+  { x: 1050, h: 52, petal: null },
+  { x: 1196, h: 68, petal: '#E8B84B' },
+  { x: 1336, h: 58, petal: '#E07A5F' },
+  { x: 1472, h: 76, petal: null },
+  { x: 1546, h: 56, petal: '#E8B84B' },
 ];
 
 function Bird({ x, y, s, delay }: { x: number; y: number; s: number; delay: number }) {
@@ -47,14 +63,38 @@ function Bird({ x, y, s, delay }: { x: number; y: number; s: number; delay: numb
 export function HeroPlate() {
   return (
     <div className="kite-plate" aria-hidden="true">
-      <img src="/hero-festival.png" alt="" decoding="async" fetchPriority="high" />
+      <img
+        className="kite-plate-base"
+        src="/hero-festival.jpg"
+        alt=""
+        decoding="async"
+        fetchPriority="high"
+      />
+
+      {/* ---- generated sprites, each with its own motion ---- */}
+      <img className="hp-sprite hp-windsock" src="/sprites/windsock.png" alt="" />
+      <img className="hp-sprite hp-kite-big" src="/sprites/kite.png" alt="" />
+      <img className="hp-sprite hp-kite-small" src="/sprites/kiteSmall.png" alt="" />
+      <img className="hp-sprite hp-runner" src="/sprites/runner.png" alt="" />
 
       <svg
         className="kite-plate-motion"
         viewBox="0 0 1584 672"
         preserveAspectRatio="xMidYMax slice"
       >
-        {/* ---- wind, blowing left to right across the sky ---- */}
+        {/* the runner's line, bobbing in step with the runner */}
+        <line
+          className="hp-line"
+          x1="332"
+          y1="470"
+          x2="474"
+          y2="268"
+          stroke="#BFB49A"
+          strokeWidth="1.6"
+          opacity="0.85"
+        />
+
+        {/* ---- wind across the sky ---- */}
         <g className="hp-wind" stroke="#FFFFFF" fill="none" strokeLinecap="round" opacity="0.75">
           <path className="hp-gust hp-gust--1" d="M0 214 q 46 -11 96 -2 q 34 6 74 -4" strokeWidth="3.4" />
           <path className="hp-gust hp-gust--2" d="M0 286 q 38 -9 80 -1 q 28 5 60 -3" strokeWidth="2.8" />
@@ -62,7 +102,7 @@ export function HeroPlate() {
           <path className="hp-gust hp-gust--4" d="M0 372 q 32 -7 68 -1 q 24 4 52 -3" strokeWidth="2.4" />
         </g>
 
-        {/* ---- birds, two flocks crossing at different heights ---- */}
+        {/* ---- birds ---- */}
         <g className="hp-flock hp-flock--a">
           {BIRDS_A.map((b, i) => (
             <Bird key={i} {...b} delay={i * 0.13} />
@@ -74,28 +114,47 @@ export function HeroPlate() {
           ))}
         </g>
 
+        {/* ---- foreground stems, leaning in the same wind ---- */}
+        <g className="hp-stems">
+          {STEMS.map((s, i) => (
+            <g key={i} className="hp-stem" style={{ animationDelay: `${(i % 5) * -0.9}s` }}>
+              <path
+                d={`M${s.x} ${STEM_BASE} q ${s.h * 0.34} -${s.h * 0.7} ${s.h * 0.62} -${s.h}`}
+                stroke="#5B8C45"
+                strokeWidth="4"
+                fill="none"
+                strokeLinecap="round"
+              />
+              {s.petal && <circle cx={s.x + s.h * 0.62} cy={STEM_BASE - s.h} r="8" fill={s.petal} />}
+              {s.petal && <circle cx={s.x + s.h * 0.62} cy={STEM_BASE - s.h} r="3.2" fill="#FBF6EA" />}
+            </g>
+          ))}
+        </g>
+
         {/* ---- the couple's conversation, taking turns ---- */}
+        {/* tail lands on the man in mustard at (583, 465) */}
         <g className="hp-bubble hp-bubble--left">
           <path
-            d="M300 452 h108 a17 17 0 0 1 17 17 v34 a17 17 0 0 1 -17 17 h-58 l-20 19 v-19 h-30 a17 17 0 0 1 -17 -17 v-34 a17 17 0 0 1 17 -17 Z"
+            d="M486 356 H594 A16 16 0 0 1 610 372 V408 A16 16 0 0 1 594 424 H590 L578 450 L566 424 H486 A16 16 0 0 1 470 408 V372 A16 16 0 0 1 486 356 Z"
             fill="#FFFDF6"
           />
           <g className="hp-dots">
-            <circle cx="330" cy="486" r="5.5" fill="#2C42B4" />
-            <circle cx="352" cy="486" r="5.5" fill="#2C42B4" />
-            <circle cx="374" cy="486" r="5.5" fill="#2C42B4" />
+            <circle cx="515" cy="390" r="5.5" fill="#2C42B4" />
+            <circle cx="540" cy="390" r="5.5" fill="#2C42B4" />
+            <circle cx="565" cy="390" r="5.5" fill="#2C42B4" />
           </g>
         </g>
 
+        {/* tail lands on the woman in coral at (688, 465) */}
         <g className="hp-bubble hp-bubble--right">
           <path
-            d="M494 428 h96 a16 16 0 0 1 16 16 v31 a16 16 0 0 1 -16 16 h-30 l18 19 l-36 -19 h-48 a16 16 0 0 1 -16 -16 v-31 a16 16 0 0 1 16 -16 Z"
+            d="M676 340 H780 A16 16 0 0 1 796 356 V390 A16 16 0 0 1 780 406 H716 L692 434 L700 406 H676 A16 16 0 0 1 660 390 V356 A16 16 0 0 1 676 340 Z"
             fill="#FFFDF6"
           />
           <g className="hp-dots">
-            <circle cx="520" cy="460" r="5" fill="#E07A5F" />
-            <circle cx="540" cy="460" r="5" fill="#E07A5F" />
-            <circle cx="560" cy="460" r="5" fill="#E07A5F" />
+            <circle cx="700" cy="373" r="5" fill="#E07A5F" />
+            <circle cx="724" cy="373" r="5" fill="#E07A5F" />
+            <circle cx="748" cy="373" r="5" fill="#E07A5F" />
           </g>
         </g>
       </svg>

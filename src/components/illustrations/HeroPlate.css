@@ -1,6 +1,6 @@
-/* The generated plate is 1584x672 (2.357:1). Holding that ratio as a
-   vw height means it never crops or letterboxes — it simply spans the
-   page and grows with it. */
+/* The generated plate is 1584x672 (2.357:1). Holding that ratio as a vw
+   height means it never crops or letterboxes — it simply spans the page
+   and grows with it, and the sprites placed on it stay registered. */
 .kite-plate {
   position: absolute;
   left: 0;
@@ -12,29 +12,91 @@
   z-index: 0;
 }
 
-.kite-plate img {
+.kite-plate-base {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center bottom;
+  /* Masking the image's own top (rather than laying a gradient over the
+     whole layer) fades it into the page sky without also washing out the
+     kites flying in front of it. */
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 20%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 20%);
 }
 
-/* Fades the plate's sky into the page's, so the join is invisible even
-   if the two ever drift apart by a shade. */
-.kite-plate::before {
-  content: '';
+/* ---------------- sprites ---------------- */
+.hp-sprite {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 26%;
-  background: linear-gradient(180deg, #f6efdd 0%, rgba(246, 239, 221, 0) 100%);
-  z-index: 1;
+  display: block;
+  height: auto;
 }
 
-/* The motion layer sits in the plate's own coordinate space, matching
-   the image's object-fit so the two stay registered at any width. */
+/* The windsock sits between the bench and the cart, sock streaming right.
+   It sways from its base, as a planted pole does. */
+.hp-windsock {
+  left: 44.5%;
+  top: 58%;
+  width: 5.4%;
+  transform-origin: 22% 100%;
+  animation: hp-pole-sway 5.2s ease-in-out infinite;
+}
+
+.hp-kite-big {
+  left: 71%;
+  top: 9%;
+  width: 12.4%;
+  transform-origin: 50% 0%;
+  animation: hp-kite-ride 7.4s ease-in-out infinite;
+}
+
+.hp-kite-small {
+  left: 27.5%;
+  top: 16%;
+  width: 6.2%;
+  transform-origin: 50% 0%;
+  animation: hp-kite-ride 5.6s ease-in-out infinite;
+  animation-delay: -2.2s;
+}
+
+/* The child runs on the spot into the wind: a bob, a forward lean and a
+   little ground travel, which reads as effort without her sliding across
+   the whole field. */
+.hp-runner {
+  left: 16.5%;
+  top: 63.5%;
+  width: 6.6%;
+  transform-origin: 50% 100%;
+  animation: hp-run 1.5s ease-in-out infinite;
+}
+
+@keyframes hp-pole-sway {
+  0%, 100% { transform: rotate(-0.9deg); }
+  50% { transform: rotate(1.1deg); }
+}
+
+@keyframes hp-kite-ride {
+  0%, 100% { transform: rotate(-5deg) translate(-6px, 4px); }
+  50% { transform: rotate(6deg) translate(8px, -10px); }
+}
+
+@keyframes hp-run {
+  0%, 100% { transform: translate(-3px, 0) rotate(-1.5deg); }
+  50% { transform: translate(3px, -7px) rotate(1.5deg); }
+}
+
+/* the kite line shares the runner's timing so the two stay joined */
+.hp-line {
+  transform-box: view-box;
+  animation: hp-run-line 1.5s ease-in-out infinite;
+}
+
+@keyframes hp-run-line {
+  0%, 100% { transform: translate(-1px, 0); }
+  50% { transform: translate(1px, -3px); }
+}
+
+/* ---------------- motion layer ---------------- */
 .kite-plate-motion {
   position: absolute;
   inset: 0;
@@ -68,12 +130,12 @@
 .hp-flock--a {
   animation-duration: 26s;
   animation-delay: -4s;
-  transform: translate(-200px, 96px);
+  --hp-y: 96px;
 }
 .hp-flock--b {
   animation-duration: 34s;
   animation-delay: -18s;
-  transform: translate(-200px, 178px);
+  --hp-y: 182px;
 }
 
 @keyframes hp-fly {
@@ -81,11 +143,8 @@
   100% { transform: translate(1840px, var(--hp-y, 96px)); }
 }
 
-.hp-flock--a { --hp-y: 96px; }
-.hp-flock--b { --hp-y: 182px; }
-
-/* wings beat by squashing vertically — cheaper and steadier than
-   animating the path itself, and reads correctly at this scale */
+/* wings beat by squashing vertically — steadier than animating the path
+   and it reads correctly at this scale */
 .hp-bird {
   transform-box: fill-box;
   transform-origin: center center;
@@ -97,9 +156,21 @@
   50% { transform: scaleY(0.42); }
 }
 
+/* ---------------- foreground stems ---------------- */
+.hp-stem {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: hp-lean 4.6s ease-in-out infinite;
+}
+
+@keyframes hp-lean {
+  0%, 100% { transform: rotate(-2.2deg); }
+  50% { transform: rotate(3.4deg); }
+}
+
 /* ---------------- conversation ---------------- */
-/* The two bubbles alternate so the pair reads as taking turns rather
-   than talking over each other. */
+/* The bubbles alternate, so the pair reads as taking turns rather than
+   talking over each other. */
 .hp-bubble {
   transform-box: fill-box;
   transform-origin: 50% 100%;
@@ -126,6 +197,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .kite-plate *,
   .kite-plate-motion * {
     animation: none !important;
   }
