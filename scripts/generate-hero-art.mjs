@@ -60,9 +60,17 @@ const SCENES = {
     couple walking, someone on a park bench. A beagle trotting across the grass.
     A tall pole with a blue-and-yellow striped windsock and a small anemometer
     spinning. A rack of hanging display kites — diamond kites, a fish kite, a
-    butterfly kite. Low-poly faceted trees. Wildflowers and tufts of grass. A
-    large blue-and-mustard diamond kite high in the upper right with a long
-    ribbon tail.`,
+    butterfly kite — with a kite-shop keeper standing right beside the rack in
+    an apron, handing a kite to a customer. On the LEFT of the frame, a large
+    ferris wheel (giant wheel) with a faceted papercraft frame and small
+    coloured passenger cabins, standing well back so it reads as part of the
+    fair. Low-poly faceted trees. Wildflowers and tufts of grass. A large
+    blue-and-mustard diamond kite high in the upper right with a long ribbon
+    tail. The wind is visibly blowing from the left: grass, flowers, trees and
+    ribbons all lean and stream to the right.
+
+    Do NOT draw any birds, and do NOT draw any speech or chat bubbles —
+    those are added separately.`,
 
   desk: `A calm home workspace on a wooden desk, seen as a small diorama island.
     One stylised person seated, mid-conversation, a mug beside them. A monitor

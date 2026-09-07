@@ -29,5 +29,106 @@
   left: 0;
   right: 0;
   height: 26%;
-  background: linear-gradient(180deg, #f4eddb 0%, rgba(244, 237, 219, 0) 100%);
+  background: linear-gradient(180deg, #f6efdd 0%, rgba(246, 239, 221, 0) 100%);
+  z-index: 1;
+}
+
+/* The motion layer sits in the plate's own coordinate space, matching
+   the image's object-fit so the two stay registered at any width. */
+.kite-plate-motion {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  overflow: visible;
+}
+
+/* ---------------- wind ---------------- */
+.hp-gust {
+  opacity: 0;
+  animation: hp-gust-drift 9s linear infinite;
+}
+.hp-gust--1 { animation-duration: 9s; animation-delay: 0s; }
+.hp-gust--2 { animation-duration: 12s; animation-delay: -3.5s; }
+.hp-gust--3 { animation-duration: 10.5s; animation-delay: -6s; }
+.hp-gust--4 { animation-duration: 14s; animation-delay: -9s; }
+
+@keyframes hp-gust-drift {
+  0% { transform: translateX(-220px); opacity: 0; }
+  12% { opacity: 0.8; }
+  70% { opacity: 0.55; }
+  100% { transform: translateX(1820px); opacity: 0; }
+}
+
+/* ---------------- birds ---------------- */
+.hp-flock {
+  animation: hp-fly linear infinite;
+}
+.hp-flock--a {
+  animation-duration: 26s;
+  animation-delay: -4s;
+  transform: translate(-200px, 96px);
+}
+.hp-flock--b {
+  animation-duration: 34s;
+  animation-delay: -18s;
+  transform: translate(-200px, 178px);
+}
+
+@keyframes hp-fly {
+  0% { transform: translate(-220px, var(--hp-y, 96px)); }
+  100% { transform: translate(1840px, var(--hp-y, 96px)); }
+}
+
+.hp-flock--a { --hp-y: 96px; }
+.hp-flock--b { --hp-y: 182px; }
+
+/* wings beat by squashing vertically — cheaper and steadier than
+   animating the path itself, and reads correctly at this scale */
+.hp-bird {
+  transform-box: fill-box;
+  transform-origin: center center;
+  animation: hp-flap 0.62s ease-in-out infinite;
+}
+
+@keyframes hp-flap {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.42); }
+}
+
+/* ---------------- conversation ---------------- */
+/* The two bubbles alternate so the pair reads as taking turns rather
+   than talking over each other. */
+.hp-bubble {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  opacity: 0;
+  animation: hp-say 7.6s ease-in-out infinite;
+  filter: drop-shadow(0 3px 5px rgba(58, 74, 46, 0.18));
+}
+.hp-bubble--right { animation-delay: -3.8s; }
+
+@keyframes hp-say {
+  0%, 46%, 100% { opacity: 0; transform: scale(0.7); }
+  6%, 38% { opacity: 1; transform: scale(1); }
+}
+
+.hp-dots circle {
+  animation: hp-dot 1.25s ease-in-out infinite;
+}
+.hp-dots circle:nth-child(2) { animation-delay: 0.16s; }
+.hp-dots circle:nth-child(3) { animation-delay: 0.32s; }
+
+@keyframes hp-dot {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kite-plate-motion * {
+    animation: none !important;
+  }
+  .hp-bubble { opacity: 1; transform: none; }
+  .hp-gust { opacity: 0.5; }
 }
