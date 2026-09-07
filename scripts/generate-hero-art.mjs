@@ -144,18 +144,55 @@ async function listModels(key) {
   }
 }
 
-async function listGeminiModels(key) {
+async function geminiImageModels(key) {
   const res = await fetch(`${GEMINI_API}/models?key=${key}`);
   if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
   const { models = [] } = await res.json();
-  const imageModels = models.filter(
-    (m) => /image/i.test(m.name) || (m.supportedGenerationMethods ?? []).includes('predict')
-  );
-  console.log(`Gemini models that may return an image (${imageModels.length}):\n`);
+  return models.filter((m) => /image/i.test(`${m.name} ${m.displayName ?? ''}`));
+}
+
+async function listGeminiModels(key) {
+  const imageModels = await geminiImageModels(key);
+  console.log(`Gemini models that can return an image (${imageModels.length}):\n`);
   for (const m of imageModels) {
     console.log(`  ${m.name.replace('models/', '')}\n      ${m.displayName ?? ''}`);
   }
-  if (!imageModels.length) console.log('  (none matched — try `--provider gemini --model <id>` directly)');
+  if (!imageModels.length) {
+    console.log('  (none matched — pass --model <id> explicitly)');
+  }
+}
+
+/**
+ * Resolves a friendly name to a real model id by asking the API what
+ * this account actually has, rather than hardcoding an id that may
+ * have been renamed. "nano-banana-pro" is Google's Pro image model;
+ * "nano-banana" the Flash one.
+ */
+export async function resolveGeminiModel(key, wanted) {
+  const available = await geminiImageModels(key);
+  if (!available.length) return DEFAULT_GEMINI_MODEL;
+
+  const ids = available.map((m) => m.name.replace('models/', ''));
+  const want = (wanted ?? '').toLowerCase();
+
+  // An explicit, real id always wins.
+  if (ids.includes(wanted)) return wanted;
+
+  const wantsPro = /pro/.test(want) || want.includes('nano-banana-pro');
+  const score = (id) => {
+    let s = 0;
+    if (/image/.test(id)) s += 4;
+    if (wantsPro && /pro/.test(id)) s += 6;
+    if (!wantsPro && /flash/.test(id)) s += 3;
+    // prefer the newest generation on offer
+    const gen = parseFloat((id.match(/gemini-(\d+(?:\.\d+)?)/) ?? [])[1] ?? '0');
+    s += gen;
+    if (/preview|exp/.test(id)) s -= 0.5;
+    return s;
+  };
+
+  const best = ids.slice().sort((a, b) => score(b) - score(a))[0];
+  return best;
 }
 
 function extractImage(payload) {
@@ -232,6 +269,14 @@ async function generate(key, model, scene, provider) {
   console.log(`saved public/hero-${scene}.png (${(buf.length / 1024).toFixed(0)} KB)`);
 }
 
+/* Only run the CLI when invoked directly, so the module stays
+   importable (and its model resolution testable). */
+const invokedDirectly =
+  process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+
+if (invokedDirectly) await main();
+
+async function main() {
 const args = parseArgs(process.argv.slice(2));
 const key = requireKey(args.provider);
 
@@ -239,7 +284,12 @@ if (args.list) {
   if (args.provider === 'gemini') await listGeminiModels(key);
   else await listModels(key);
 } else if (args.scenes.length) {
-  for (const scene of args.scenes) await generate(key, args.model, scene, args.provider);
+  let model = args.model;
+  if (args.provider === 'gemini') {
+    model = await resolveGeminiModel(key, args.model ?? 'nano-banana-pro');
+    console.log(`Resolved image model: ${model}`);
+  }
+  for (const scene of args.scenes) await generate(key, model, scene, args.provider);
 } else {
   console.log(
     'Usage:\n' +
@@ -249,4 +299,5 @@ if (args.list) {
       '  --provider gemini|openrouter  default: whichever key is set\n' +
       '  --model <id>                  override the model'
   );
+}
 }
