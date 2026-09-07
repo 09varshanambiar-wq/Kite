@@ -105,12 +105,10 @@ function parseArgs(argv) {
   if (!args.provider) {
     args.provider = process.env.OPENROUTER_API_KEY ? 'openrouter' : 'gemini';
   }
-  // Leave `model` null for Gemini: resolveGeminiModel() picks from what
-  // the account actually has. Pre-filling a default here defeats that —
-  // it fed a *flash* id into the resolver, which then preferred flash.
-  if (!args.model && args.provider !== 'gemini') {
-    args.model = DEFAULT_MODEL;
-  }
+  // `model` deliberately stays null when unspecified, for BOTH providers:
+  // the resolvers pick from what the account actually has. Pre-filling a
+  // default here defeats that — it fed a *flash* id into the resolver,
+  // which then concluded Pro was not wanted and chose flash.
   return args;
 }
 
@@ -127,15 +125,28 @@ function requireKey(provider) {
   return key;
 }
 
-async function listModels(key) {
+/** Shared preference scoring, so both providers pick the same tier. */
+function scoreModelId(id, wantsPro) {
+  let s = 0;
+  if (/image/.test(id)) s += 4;
+  if (wantsPro && /pro/.test(id)) s += 6;
+  if (!wantsPro && /flash/.test(id)) s += 3;
+  const gen = parseFloat((id.match(/gemini-(\d+(?:\.\d+)?)/) ?? [])[1] ?? '0');
+  s += gen;
+  if (/preview|exp/.test(id)) s -= 0.5;
+  if (/lite/.test(id)) s -= 2;
+  return s;
+}
+
+async function openRouterImageModels(key) {
   const res = await fetch(`${API}/models`, { headers: { Authorization: `Bearer ${key}` } });
   if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
   const { data } = await res.json();
+  return data.filter((m) => (m.architecture?.output_modalities ?? []).includes('image'));
+}
 
-  const imageModels = data.filter((m) =>
-    (m.architecture?.output_modalities ?? []).includes('image')
-  );
-
+async function listModels(key) {
+  const imageModels = await openRouterImageModels(key);
   if (!imageModels.length) {
     console.log('No image-output models are visible on this account right now.');
     return;
@@ -145,6 +156,17 @@ async function listModels(key) {
     const price = m.pricing?.image ?? m.pricing?.completion ?? '?';
     console.log(`  ${m.id}\n      ${m.name} — image price: ${price}`);
   }
+}
+
+/** Same discovery approach as the Gemini path: ask, don't hardcode. */
+export async function resolveOpenRouterModel(key, wanted) {
+  const available = await openRouterImageModels(key);
+  const ids = available.map((m) => m.id);
+  if (!ids.length) return DEFAULT_MODEL;
+  if (ids.includes(wanted)) return wanted;
+
+  const wantsPro = /pro/.test((wanted ?? '').toLowerCase());
+  return ids.slice().sort((a, b) => scoreModelId(b, wantsPro) - scoreModelId(a, wantsPro))[0];
 }
 
 async function geminiImageModels(key) {
@@ -182,20 +204,7 @@ export async function resolveGeminiModel(key, wanted) {
   if (ids.includes(wanted)) return wanted;
 
   const wantsPro = /pro/.test(want) || want.includes('nano-banana-pro');
-  const score = (id) => {
-    let s = 0;
-    if (/image/.test(id)) s += 4;
-    if (wantsPro && /pro/.test(id)) s += 6;
-    if (!wantsPro && /flash/.test(id)) s += 3;
-    // prefer the newest generation on offer
-    const gen = parseFloat((id.match(/gemini-(\d+(?:\.\d+)?)/) ?? [])[1] ?? '0');
-    s += gen;
-    if (/preview|exp/.test(id)) s -= 0.5;
-    return s;
-  };
-
-  const best = ids.slice().sort((a, b) => score(b) - score(a))[0];
-  return best;
+  return ids.slice().sort((a, b) => scoreModelId(b, wantsPro) - scoreModelId(a, wantsPro))[0];
 }
 
 function extractImage(payload) {
@@ -288,10 +297,12 @@ if (args.list) {
   else await listModels(key);
 } else if (args.scenes.length) {
   let model = args.model;
-  if (args.provider === 'gemini') {
-    model = await resolveGeminiModel(key, args.model ?? 'nano-banana-pro');
-    console.log(`Resolved image model: ${model}`);
-  }
+  const want = args.model ?? 'nano-banana-pro';
+  model =
+    args.provider === 'gemini'
+      ? await resolveGeminiModel(key, want)
+      : await resolveOpenRouterModel(key, want);
+  console.log(`Resolved image model: ${model}`);
   for (const scene of args.scenes) await generate(key, model, scene, args.provider);
 } else {
   console.log(
