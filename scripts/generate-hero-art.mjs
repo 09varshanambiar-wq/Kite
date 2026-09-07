@@ -105,8 +105,11 @@ function parseArgs(argv) {
   if (!args.provider) {
     args.provider = process.env.OPENROUTER_API_KEY ? 'openrouter' : 'gemini';
   }
-  if (!args.model) {
-    args.model = args.provider === 'gemini' ? DEFAULT_GEMINI_MODEL : DEFAULT_MODEL;
+  // Leave `model` null for Gemini: resolveGeminiModel() picks from what
+  // the account actually has. Pre-filling a default here defeats that —
+  // it fed a *flash* id into the resolver, which then preferred flash.
+  if (!args.model && args.provider !== 'gemini') {
+    args.model = DEFAULT_MODEL;
   }
   return args;
 }
