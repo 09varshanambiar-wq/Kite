@@ -17,10 +17,12 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const API = 'https://openrouter.ai/api/v1';
+const GEMINI_API = 'https://generativelanguage.googleapis.com/v1beta';
 
-// Verify against `--list` before trusting this default; OpenRouter's image
-// line-up shifts, and only some models return an image at all.
+// Verify against `--list` before trusting either default; both line-ups
+// shift, and only some models return an image at all.
 const DEFAULT_MODEL = 'google/gemini-2.5-flash-image-preview';
+const DEFAULT_GEMINI_MODEL = 'gemini-2.5-flash-image-preview';
 
 /* ------------------------------------------------------------------ *
  * The style contract every scene shares. This is the part that makes
@@ -89,21 +91,34 @@ const ASPECT = 'Wide panoramic banner, roughly 21:9, at least 2400px across.';
 /* ------------------------------------------------------------------ */
 
 function parseArgs(argv) {
-  const args = { scenes: [], model: DEFAULT_MODEL, list: false };
+  const args = { scenes: [], model: null, list: false, provider: null };
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
     if (a === '--list') args.list = true;
     else if (a === '--all') args.scenes = Object.keys(SCENES);
     else if (a === '--scene') args.scenes.push(argv[++i]);
     else if (a === '--model') args.model = argv[++i];
+    else if (a === '--provider') args.provider = argv[++i];
+  }
+  // Default to whichever key is present. Note that some sandboxes reach
+  // Google's endpoint but not OpenRouter's.
+  if (!args.provider) {
+    args.provider = process.env.OPENROUTER_API_KEY ? 'openrouter' : 'gemini';
+  }
+  if (!args.model) {
+    args.model = args.provider === 'gemini' ? DEFAULT_GEMINI_MODEL : DEFAULT_MODEL;
   }
   return args;
 }
 
-function requireKey() {
-  const key = process.env.OPENROUTER_API_KEY;
+function requireKey(provider) {
+  const envName = provider === 'gemini' ? 'GEMINI_API_KEY' : 'OPENROUTER_API_KEY';
+  const key = process.env[envName];
   if (!key) {
-    console.error('Set OPENROUTER_API_KEY first:\n  export OPENROUTER_API_KEY=sk-or-v1-...');
+    console.error(
+      `Set ${envName} first:\n  export ${envName}=...\n\n` +
+        'Providers: --provider gemini | --provider openrouter'
+    );
     process.exit(1);
   }
   return key;
@@ -129,18 +144,51 @@ async function listModels(key) {
   }
 }
 
+async function listGeminiModels(key) {
+  const res = await fetch(`${GEMINI_API}/models?key=${key}`);
+  if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+  const { models = [] } = await res.json();
+  const imageModels = models.filter(
+    (m) => /image/i.test(m.name) || (m.supportedGenerationMethods ?? []).includes('predict')
+  );
+  console.log(`Gemini models that may return an image (${imageModels.length}):\n`);
+  for (const m of imageModels) {
+    console.log(`  ${m.name.replace('models/', '')}\n      ${m.displayName ?? ''}`);
+  }
+  if (!imageModels.length) console.log('  (none matched — try `--provider gemini --model <id>` directly)');
+}
+
 function extractImage(payload) {
+  // OpenRouter chat-completions shape
   const msg = payload.choices?.[0]?.message;
   const url = msg?.images?.[0]?.image_url?.url ?? msg?.images?.[0]?.url;
   if (typeof url === 'string' && url.startsWith('data:')) {
     return Buffer.from(url.slice(url.indexOf(',') + 1), 'base64');
+  }
+  // Gemini generateContent shape
+  const parts = payload.candidates?.[0]?.content?.parts ?? [];
+  for (const part of parts) {
+    const data = part.inlineData?.data ?? part.inline_data?.data;
+    if (data) return Buffer.from(data, 'base64');
   }
   const b64 = payload.data?.[0]?.b64_json;
   if (b64) return Buffer.from(b64, 'base64');
   return null;
 }
 
-async function generate(key, model, scene) {
+async function callGemini(key, model, prompt) {
+  const res = await fetch(`${GEMINI_API}/models/${model}:generateContent?key=${key}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { responseModalities: ['IMAGE', 'TEXT'] },
+    }),
+  });
+  return res;
+}
+
+async function generate(key, model, scene, provider) {
   const body = SCENES[scene];
   if (!body) {
     console.error(`Unknown scene "${scene}". Available: ${Object.keys(SCENES).join(', ')}`);
@@ -149,16 +197,19 @@ async function generate(key, model, scene) {
 
   const prompt = `${STYLE}\n\nSCENE — ${scene.toUpperCase()}:\n${body.replace(/\s+/g, ' ')}\n\n${ASPECT}`;
 
-  process.stdout.write(`Generating "${scene}" with ${model}… `);
-  const res = await fetch(`${API}/chat/completions`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model,
-      modalities: ['image', 'text'],
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  });
+  process.stdout.write(`Generating "${scene}" via ${provider} (${model})… `);
+  const res =
+    provider === 'gemini'
+      ? await callGemini(key, model, prompt)
+      : await fetch(`${API}/chat/completions`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model,
+            modalities: ['image', 'text'],
+            messages: [{ role: 'user', content: prompt }],
+          }),
+        });
 
   if (!res.ok) {
     console.log('failed.');
@@ -182,12 +233,20 @@ async function generate(key, model, scene) {
 }
 
 const args = parseArgs(process.argv.slice(2));
-const key = requireKey();
+const key = requireKey(args.provider);
 
 if (args.list) {
-  await listModels(key);
+  if (args.provider === 'gemini') await listGeminiModels(key);
+  else await listModels(key);
 } else if (args.scenes.length) {
-  for (const scene of args.scenes) await generate(key, args.model, scene);
+  for (const scene of args.scenes) await generate(key, args.model, scene, args.provider);
 } else {
-  console.log('Usage:\n  --list\n  --scene festival\n  --all\n  --scene desk --model <id>');
+  console.log(
+    'Usage:\n' +
+      '  --list                        models that can return an image\n' +
+      '  --scene festival              generate one scene\n' +
+      '  --all                         generate all five\n' +
+      '  --provider gemini|openrouter  default: whichever key is set\n' +
+      '  --model <id>                  override the model'
+  );
 }
