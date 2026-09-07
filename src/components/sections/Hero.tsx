@@ -1,6 +1,6 @@
 import './Hero.css';
 import { Button } from '../core/Button';
-import { HeroScene } from '../illustrations/HeroScene';
+import { HeroScene3D } from '../illustrations/HeroScene3D';
 
 export function Hero() {
   return (
@@ -20,7 +20,7 @@ export function Hero() {
         </div>
       </div>
 
-      <HeroScene />
+      <HeroScene3D />
     </section>
   );
 }

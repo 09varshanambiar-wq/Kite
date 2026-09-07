@@ -156,3 +156,25 @@
   }
   .ks-bubble { opacity: 1; }
 }
+
+/* The 3D canvas sits in the same band as the vector scene, with the
+   paper grain laid over it so the render matches the rest of the page. */
+.kite-scene--3d {
+  pointer-events: none;
+}
+
+.kite-scene--3d canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.kite-scene--3d::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.16;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
