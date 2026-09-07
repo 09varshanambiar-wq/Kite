@@ -1,0 +1,33 @@
+/* The generated plate is 1584x672 (2.357:1). Holding that ratio as a
+   vw height means it never crops or letterboxes — it simply spans the
+   page and grows with it. */
+.kite-plate {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: clamp(300px, 42.4vw, 900px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.kite-plate img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+}
+
+/* Fades the plate's sky into the page's, so the join is invisible even
+   if the two ever drift apart by a shade. */
+.kite-plate::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 26%;
+  background: linear-gradient(180deg, #f4eddb 0%, rgba(244, 237, 219, 0) 100%);
+}

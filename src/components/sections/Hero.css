@@ -9,11 +9,12 @@
   /* Reserve the sky above the scene for the type. Tracks the scene's
      own 37.5vw height, minus the transparent upper sky the copy can
      safely sit over. */
-  padding-bottom: clamp(300px, 30vw, 560px);
+  padding-bottom: clamp(300px, 32vw, 620px);
   display: flex;
   justify-content: center;
+  /* ends on the plate's exact sky colour so the two meet invisibly */
   background:
-    linear-gradient(180deg, #FBF6EA 0%, #F7F1E3 42%, #F3EEDF 100%);
+    linear-gradient(180deg, #FBF6EA 0%, #F7F0DF 46%, #F4EDDB 100%);
 }
 
 .kite-hero-statement {
