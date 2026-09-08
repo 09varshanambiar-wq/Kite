@@ -74,8 +74,15 @@ export function HeroPlate() {
       {/* ---- generated sprites, each with its own motion ---- */}
       <img className="hp-sprite hp-windsock" src="/sprites/windsock.png" alt="" />
       <img className="hp-sprite hp-kite-big" src="/sprites/kite.png" alt="" />
-      <img className="hp-sprite hp-kite-small" src="/sprites/kiteSmall.png" alt="" />
-      <img className="hp-sprite hp-runner" src="/sprites/runner.png" alt="" />
+
+      {/* The child, her kite and the string between them travel as one
+          unit at the same rate, or the line would tear away from her. */}
+      <div className="hp-track hp-track--kite">
+        <img className="hp-kite-small" src="/sprites/kiteSmall.png" alt="" />
+      </div>
+      <div className="hp-track hp-track--runner">
+        <img className="hp-runner" src="/sprites/runner.png" alt="" />
+      </div>
 
       <svg
         className="kite-plate-motion"
@@ -93,6 +100,25 @@ export function HeroPlate() {
           strokeWidth="1.6"
           opacity="0.85"
         />
+
+        {/* ---- clouds, drifting far slower than the gusts ---- */}
+        <g className="hp-clouds">
+          <g className="hp-cloud hp-cloud--1">
+            <ellipse cx="0" cy="0" rx="62" ry="22" fill="#FFFDF6" />
+            <ellipse cx="44" cy="-10" rx="42" ry="19" fill="#FFFFFF" />
+            <ellipse cx="-40" cy="-4" rx="34" ry="16" fill="#FBF4E4" />
+            <ellipse cx="6" cy="12" rx="70" ry="12" fill="#F3EADA" opacity="0.75" />
+          </g>
+          <g className="hp-cloud hp-cloud--2">
+            <ellipse cx="0" cy="0" rx="46" ry="17" fill="#FFFDF6" />
+            <ellipse cx="34" cy="-8" rx="30" ry="14" fill="#FFFFFF" />
+            <ellipse cx="2" cy="9" rx="52" ry="9" fill="#F3EADA" opacity="0.7" />
+          </g>
+          <g className="hp-cloud hp-cloud--3">
+            <ellipse cx="0" cy="0" rx="34" ry="13" fill="#FFFDF6" />
+            <ellipse cx="24" cy="-6" rx="22" ry="11" fill="#FFFFFF" />
+          </g>
+        </g>
 
         {/* ---- wind across the sky ---- */}
         <g className="hp-wind" stroke="#FFFFFF" fill="none" strokeLinecap="round" opacity="0.75">

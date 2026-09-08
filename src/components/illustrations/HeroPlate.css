@@ -50,24 +50,52 @@
   animation: hp-kite-ride 7.4s ease-in-out infinite;
 }
 
-.hp-kite-small {
-  left: 27.5%;
+/* The child actually crosses the field rather than jogging on the spot.
+   Her kite and her string travel the same absolute distance over the
+   same 34s, so the three stay joined; each expresses that distance as a
+   share of its own width, which keeps them in step at any screen size.
+   The bob rides on the image inside the moving track. */
+.hp-track {
+  position: absolute;
+  animation: hp-journey 34s linear infinite;
+}
+
+.hp-track img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.hp-track--runner {
+  left: 12%;
+  top: 63.5%;
+  width: 6.6%;
+  --hp-travel: 303%; /* 20% of the plate, in units of her own width */
+}
+
+.hp-track--kite {
+  left: 23%;
   top: 16%;
   width: 6.2%;
+  --hp-travel: 323%; /* the same 20% of the plate */
+}
+
+.hp-track--runner img {
+  transform-origin: 50% 100%;
+  animation: hp-run 1.9s ease-in-out infinite;
+}
+
+.hp-track--kite img {
   transform-origin: 50% 0%;
   animation: hp-kite-ride 5.6s ease-in-out infinite;
   animation-delay: -2.2s;
 }
 
-/* The child runs on the spot into the wind: a bob, a forward lean and a
-   little ground travel, which reads as effort without her sliding across
-   the whole field. */
-.hp-runner {
-  left: 16.5%;
-  top: 63.5%;
-  width: 6.6%;
-  transform-origin: 50% 100%;
-  animation: hp-run 1.5s ease-in-out infinite;
+@keyframes hp-journey {
+  0% { transform: translateX(0); opacity: 0; }
+  5% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateX(var(--hp-travel, 300%)); opacity: 0; }
 }
 
 @keyframes hp-pole-sway {
@@ -81,19 +109,21 @@
 }
 
 @keyframes hp-run {
-  0%, 100% { transform: translate(-3px, 0) rotate(-1.5deg); }
-  50% { transform: translate(3px, -7px) rotate(1.5deg); }
+  0%, 100% { transform: translateY(0) rotate(-0.8deg); }
+  50% { transform: translateY(-4%) rotate(0.8deg); }
 }
 
 /* the kite line shares the runner's timing so the two stay joined */
 .hp-line {
   transform-box: view-box;
-  animation: hp-run-line 1.5s ease-in-out infinite;
+  animation: hp-line-journey 34s linear infinite;
 }
 
-@keyframes hp-run-line {
-  0%, 100% { transform: translate(-1px, 0); }
-  50% { transform: translate(1px, -3px); }
+@keyframes hp-line-journey {
+  0% { transform: translateX(0); opacity: 0; }
+  5% { opacity: 0.85; }
+  90% { opacity: 0.85; }
+  100% { transform: translateX(317px); opacity: 0; }
 }
 
 /* ---------------- motion layer ---------------- */
@@ -160,12 +190,12 @@
 .hp-stem {
   transform-box: fill-box;
   transform-origin: 50% 100%;
-  animation: hp-lean 4.6s ease-in-out infinite;
+  animation: hp-lean 6.4s ease-in-out infinite;
 }
 
 @keyframes hp-lean {
-  0%, 100% { transform: rotate(-2.2deg); }
-  50% { transform: rotate(3.4deg); }
+  0%, 100% { transform: rotate(-0.9deg); }
+  50% { transform: rotate(1.5deg); }
 }
 
 /* ---------------- conversation ---------------- */
@@ -203,4 +233,32 @@
   }
   .hp-bubble { opacity: 1; transform: none; }
   .hp-gust { opacity: 0.5; }
+}
+
+/* ---------------- clouds ---------------- */
+/* Far slower than the gusts — clouds that raced would make the sky feel
+   frantic rather than breezy. */
+.hp-cloud {
+  animation: hp-cloud-drift linear infinite;
+  opacity: 0.9;
+}
+.hp-cloud--1 {
+  animation-duration: 78s;
+  animation-delay: -10s;
+  --hp-cy: 118px;
+}
+.hp-cloud--2 {
+  animation-duration: 104s;
+  animation-delay: -55s;
+  --hp-cy: 66px;
+}
+.hp-cloud--3 {
+  animation-duration: 92s;
+  animation-delay: -32s;
+  --hp-cy: 196px;
+}
+
+@keyframes hp-cloud-drift {
+  0% { transform: translate(-140px, var(--hp-cy, 120px)); }
+  100% { transform: translate(1740px, var(--hp-cy, 120px)); }
 }
