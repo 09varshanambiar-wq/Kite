@@ -79,18 +79,6 @@
   animation-iteration-count: infinite;
 }
 
-.hp-kid--a {
-  --hp-x0: 90px;
-  --hp-x1: 1560px;
-  --hp-gy: 618px;
-}
-
-.hp-kid--b {
-  --hp-x0: -80px;
-  --hp-x1: 1420px;
-  --hp-gy: 660px;
-}
-
 @keyframes hp-kid-cross {
   0% { transform: translate(var(--hp-x0), var(--hp-gy)); opacity: 0; }
   5% { opacity: 1; }
@@ -98,17 +86,18 @@
   100% { transform: translate(var(--hp-x1), var(--hp-gy)); opacity: 0; }
 }
 
-/* The shadow is outside this node, so it stays on the ground while she
-   bobs above it. */
-.hp-kid-bob {
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-  animation: hp-kid-bob 0.66s ease-in-out infinite;
+/* One pose of the stride is visible at a time. Swapping drawn poses,
+   rather than tweening joints, matches the plate's stop-motion look. */
+.hp-frame {
+  opacity: 0;
+  animation-name: hp-frame;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 }
 
-@keyframes hp-kid-bob {
-  0%, 100% { transform: translateY(0) rotate(-2deg); }
-  50% { transform: translateY(-5px) rotate(2deg); }
+@keyframes hp-frame {
+  0%, 16.6% { opacity: 1; }
+  16.7%, 100% { opacity: 0; }
 }
 
 /* The group's bounding box ends at the child's hand, so rotating about

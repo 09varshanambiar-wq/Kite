@@ -154,16 +154,150 @@ interface ChildPalette {
   shirtLit: string;
   pants: string;
   pantsShade: string;
+  /* The far side of the body is held back a full step in tone, so a
+     limb behind the torso still reads as behind it. */
+  pantsFar: string;
+  skinFar: string;
   shoe: string;
+  shoeFar: string;
 }
 
-function ChildRunning({ c, id }: { c: ChildPalette; id: string }) {
+const rad = (deg: number) => (deg * Math.PI) / 180;
+
+/** Walks `len` from a joint at `angle` degrees off straight-down. */
+function joint([x, y]: number[], len: number, angle: number): number[] {
+  return [x + len * Math.sin(rad(angle)), y + len * Math.cos(rad(angle))];
+}
+
+/** A tapered quad between two joints — a limb with some thickness to it. */
+function limb([ax, ay]: number[], [bx, by]: number[], wa: number, wb: number) {
+  const dx = bx - ax;
+  const dy = by - ay;
+  const len = Math.hypot(dx, dy) || 1;
+  const nx = -dy / len;
+  const ny = dx / len;
+  return [
+    `M${ax + (nx * wa) / 2} ${ay + (ny * wa) / 2}`,
+    `L${bx + (nx * wb) / 2} ${by + (ny * wb) / 2}`,
+    `L${bx - (nx * wb) / 2} ${by - (ny * wb) / 2}`,
+    `L${ax - (nx * wa) / 2} ${ay - (ny * wa) / 2}`,
+    `Z`,
+  ].join(' ');
+}
+
+/* One stride, six poses: strike, stance, toe-off, tuck, knee-drive,
+   reach. [thigh angle off vertical, knee bend]. The other leg runs the
+   same table three frames along, which is what makes it a stride
+   rather than a hop. */
+const LEG: [number, number][] = [
+  [34, 16],
+  [10, 8],
+  [-26, 26],
+  [-18, 100],
+  [22, 94],
+  [38, 44],
+];
+
+/* Two of the six poses have both feet off the ground. That flight
+   phase is the whole difference between a run and a march. */
+const RISE = [-1, 0, -2, -7, -6, -3];
+
+/* The free arm swings against the legs. */
+const FREE_ARM = [-52, -22, 20, 48, 16, -34];
+
+const FRAMES = LEG.length;
+const THIGH = 21;
+const SHIN = 21;
+
+function ChildPose({ c, id, f }: { c: ChildPalette; id: string; f: number }) {
+  const rise = RISE[f];
+  const hip = [0, -40 + rise];
+
+  const leg = (phase: number) => {
+    const [thigh, knee] = LEG[phase % FRAMES];
+    const kneePt = joint(hip, THIGH, thigh);
+    const ankle = joint(kneePt, SHIN, thigh - knee);
+    const toe = joint(ankle, 10, thigh - knee + 74);
+    return { kneePt, ankle, toe };
+  };
+
+  const near = leg(f);
+  const far = leg(f + 3);
+  /* Angles are off straight-down, so the free arm hangs near 0 and
+     swings around it; the elbow stays bent the way a runner's does. */
+  /* Long enough, and swinging wide enough, that both ends of the swing
+     clear the torso — a shorter arm spends the whole stride hidden
+     behind it. */
+  const freeShoulder = [-4, -62 + rise];
+  const freeElbow = joint(freeShoulder, 16, FREE_ARM[f]);
+  const freeHand = joint(freeElbow, 15, FREE_ARM[f] + 65);
+
+  /* The string hand is pinned: the kite is anchored to it from outside
+     this group, so it must not ride the bob. The shoulder moves and the
+     arm takes up the difference. */
+  const HAND = [33, -97];
+  const ELBOW = [24, -79];
+  const stringShoulder = [10, -62 + rise];
+
+  return (
+    <g>
+      {/* far side first — leg and arm behind the body */}
+      <path d={limb(hip, far.kneePt, 15, 12)} fill={c.pantsFar} />
+      <path d={limb(far.kneePt, far.ankle, 12, 9)} fill={c.pantsFar} />
+      <path d={limb(far.ankle, far.toe, 8, 6)} fill={c.shoeFar} />
+      <path d={limb(freeShoulder, freeElbow, 9.5, 8)} fill={c.skinFar} />
+      <path d={limb(freeElbow, freeHand, 8, 6.5)} fill={c.skinFar} />
+      <circle cx={freeHand[0]} cy={freeHand[1]} r="4" fill={c.skinFar} />
+
+      {/* torso */}
+      <path
+        d={`M${-13} ${-38 + rise} L13 ${-38 + rise} L19 ${-68 + rise} L-8 ${-68 + rise} Z`}
+        fill={`url(#${id}-shirt)`}
+      />
+      <path
+        d={`M6 ${-38 + rise} L13 ${-38 + rise} L19 ${-68 + rise} L11 ${-68 + rise} Z`}
+        fill={c.shirtShade}
+        opacity="0.45"
+      />
+
+      {/* near leg */}
+      <path d={limb(hip, near.kneePt, 16, 13)} fill={`url(#${id}-pants)`} />
+      <path d={limb(near.kneePt, near.ankle, 13, 10)} fill={`url(#${id}-pants)`} />
+      <path d={limb(near.ankle, near.toe, 9, 7)} fill={c.shoe} />
+
+      {/* sleeves */}
+      <path d={`M-8 ${-68 + rise} L0 ${-68 + rise} L-2 ${-55 + rise} L-12 ${-57 + rise} Z`} fill={c.shirtLit} />
+      <path d={`M11 ${-68 + rise} L19 ${-68 + rise} L18 ${-55 + rise} L10 ${-56 + rise} Z`} fill={c.shirtShade} />
+
+      {/* the arm up the string, and the fist closed on it */}
+      <path d={limb(stringShoulder, ELBOW, 10, 8)} fill={`url(#${id}-skin)`} />
+      <path d={limb(ELBOW, HAND, 8, 7)} fill={c.skin} />
+      <circle cx={HAND[0]} cy={HAND[1]} r="4.2" fill={c.skinShade} />
+
+      <path d={`M1 ${-73 + rise} L12 ${-73 + rise} L12 ${-63 + rise} L1 ${-63 + rise} Z`} fill={c.skinShade} />
+
+      {/* head — deliberately large, the way a child's is */}
+      <g transform={`translate(0 ${rise})`}>
+        <path d="M8 -97 L19 -92 L22 -81 L16 -69 L5 -68 L-3 -76 L-3 -89 Z" fill={`url(#${id}-skin)`} />
+        <path d="M14 -94 L19 -92 L22 -81 L16 -69 L12 -69 Z" fill={c.skinShade} opacity="0.7" />
+        <path d="M2 -88 L13 -85 L13 -73 L4 -71 L-1 -77 Z" fill={c.skin} opacity="0.55" />
+        <path d="M8 -98 L20 -92 L22 -83 L14 -87 L2 -85 L-3 -79 L-3 -89 Z" fill={c.hair} />
+        <path d="M14 -94 L20 -92 L22 -83 L15 -86 Z" fill={c.hairShade} />
+        <path d="M6 -97 L15 -93 L12 -89 L2 -87 L-1 -90 Z" fill={c.skin} opacity="0.16" />
+      </g>
+    </g>
+  );
+}
+
+/* The stride plays as six drawn poses rather than tweened joints: the
+   plate is a stop-motion-looking papercraft render, and swapped poses
+   sit in that world better than smooth interpolation does. */
+function ChildRunning({ c, id, cycle }: { c: ChildPalette; id: string; cycle: number }) {
   return (
     <g>
       <defs>
         {/* The plate is a soft render, not flat colour, so each part
-            carries a gradient from its lit edge into its shade; the
-            facet polygons on top only sharpen the folds. */}
+            carries a gradient from its lit edge into its shade. */}
         <linearGradient id={`${id}-shirt`} x1="0" y1="0" x2="1" y2="0.7">
           <stop offset="0" stopColor={c.shirtLit} />
           <stop offset="0.55" stopColor={c.shirt} />
@@ -178,39 +312,18 @@ function ChildRunning({ c, id }: { c: ChildPalette; id: string }) {
           <stop offset="1" stopColor={c.skinShade} />
         </linearGradient>
       </defs>
-
-      {/* trailing leg and arm sit behind the body */}
-      <path d="M-9 -42 L1 -42 L-5 -25 L-16 -9 L-25 -14 L-13 -27 Z" fill={c.pantsShade} />
-      <path d="M-25 -14 L-16 -9 L-19 -1 L-30 -6 Z" fill={c.shoe} />
-      <path d="M-13 -66 L-3 -63 L-15 -52 L-25 -43 L-31 -50 L-20 -58 Z" fill={c.skinShade} />
-
-      {/* leading leg */}
-      <path d="M-1 -42 L11 -42 L18 -22 L20 -4 L11 -4 L8 -22 Z" fill={`url(#${id}-pants)`} />
-      <path d="M8 -42 L11 -42 L18 -22 L20 -4 L16 -4 L14 -22 Z" fill={c.pantsShade} opacity="0.55" />
-      <path d="M11 -4 L20 -4 L24 2 L9 2 Z" fill={c.shoe} />
-
-      {/* torso and sleeves */}
-      <path d="M-14 -38 L14 -38 L17 -68 L-11 -68 Z" fill={`url(#${id}-shirt)`} />
-      <path d="M7 -38 L14 -38 L17 -68 L10 -68 Z" fill={c.shirtShade} opacity="0.45" />
-      <path d="M-11 -68 L-3 -68 L-5 -55 L-15 -57 Z" fill={c.shirtLit} />
-      <path d="M9 -68 L17 -68 L17 -55 L8 -56 Z" fill={c.shirtShade} />
-
-      {/* the arm up the string: upper arm, forearm and a fist that
-          actually closes on the line */}
-      <path d="M8 -59 L19 -63 L27 -77 L20 -81 L14 -70 Z" fill={`url(#${id}-skin)`} />
-      <path d="M20 -81 L27 -77 L31 -90 L24 -93 Z" fill={c.skin} />
-      <path d="M23 -90 L32 -93 L34 -99 L25 -100 Z" fill={c.skinShade} />
-
-      <path d="M1 -73 L12 -73 L12 -63 L1 -63 Z" fill={c.skinShade} />
-
-      {/* head — deliberately large, the way a child's is */}
-      <path d="M8 -97 L19 -92 L22 -81 L16 -69 L5 -68 L-3 -76 L-3 -89 Z" fill={`url(#${id}-skin)`} />
-      <path d="M14 -94 L19 -92 L22 -81 L16 -69 L12 -69 Z" fill={c.skinShade} opacity="0.7" />
-      {/* the face plane catches the light */}
-      <path d="M2 -88 L13 -85 L13 -73 L4 -71 L-1 -77 Z" fill={c.skin} opacity="0.55" />
-      <path d="M8 -98 L20 -92 L22 -83 L14 -87 L2 -85 L-3 -79 L-3 -89 Z" fill={c.hair} />
-      <path d="M14 -94 L20 -92 L22 -83 L15 -86 Z" fill={c.hairShade} />
-      <path d="M6 -97 L15 -93 L12 -89 L2 -87 L-1 -90 Z" fill={c.skin} opacity="0.16" />
+      {LEG.map((_, f) => (
+        <g
+          key={f}
+          className="hp-frame"
+          style={{
+            animationDuration: `${cycle}s`,
+            animationDelay: `${(-(FRAMES - f) * cycle) / FRAMES}s`,
+          }}
+        >
+          <ChildPose c={c} id={id} f={f} />
+        </g>
+      ))}
     </g>
   );
 }
@@ -238,25 +351,45 @@ interface KidProps {
   s: number;
   dur: number;
   delay: number;
+  /** where the run starts and ends, and the ground line it runs along */
+  x0: number;
+  x1: number;
+  gy: number;
   hand: [number, number];
   kite: [number, number];
   palette: ChildPalette;
   kiteColours: { face: string; fold: string; tail: string };
 }
 
+/** Local units from sole to crown. */
+const CHILD_H = 97;
+
 /* Child, string and kite travel as one group, so the three can never
    drift apart. The group that swings is anchored at the child's hand —
    its bounding box ends exactly there — so rotating it about its
    bottom-right corner swings the kite through an arc while the string
    stays in her fist. */
-function KiteKid({ cls, s, dur, delay, hand, kite, palette, kiteColours }: KidProps) {
+function KiteKid({ cls, s, dur, delay, x0, x1, gy, hand, kite, palette, kiteColours }: KidProps) {
+  /* Pin the stride to the distance actually covered, or she treadmills:
+     one cycle is two steps, and a running stride runs a little longer
+     than the runner is tall. */
+  const speed = Math.abs(x1 - x0) / dur;
+  const cycle = (1.15 * CHILD_H * s) / speed;
+
   return (
-    <g className={`hp-kid ${cls}`} style={{ animationDuration: `${dur}s`, animationDelay: `${delay}s` }}>
+    <g
+      className={`hp-kid ${cls}`}
+      style={{
+        animationDuration: `${dur}s`,
+        animationDelay: `${delay}s`,
+        ['--hp-x0' as string]: `${x0}px`,
+        ['--hp-x1' as string]: `${x1}px`,
+        ['--hp-gy' as string]: `${gy}px`,
+      }}
+    >
       <ellipse cx="0" cy="2" rx={17 * s} ry={4.5 * s} fill="#2F4A2A" opacity="0.16" />
       <g transform={`scale(${s})`}>
-        <g className="hp-kid-bob">
-          <ChildRunning c={palette} id={cls} />
-        </g>
+        <ChildRunning c={palette} id={cls} cycle={cycle} />
       </g>
       <g transform={`translate(${hand[0]} ${hand[1]})`}>
         <g className="hp-kid-line" style={{ animationDelay: `${delay / 3}s` }}>
@@ -411,8 +544,11 @@ export function HeroPlate() {
         <KiteKid
           cls="hp-kid--a"
           s={1.02}
-          dur={27}
+          dur={16}
           delay={0}
+          x0={90}
+          x1={1560}
+          gy={618}
           hand={[34, -99]}
           kite={[-186, -172]}
           palette={{
@@ -425,15 +561,21 @@ export function HeroPlate() {
             shirtLit: '#F09C80',
             pants: '#4A6FC8',
             pantsShade: '#33509E',
+            pantsFar: '#22376B',
+            skinFar: '#9C6B3E',
             shoe: '#3A2E22',
+            shoeFar: '#291F16',
           }}
           kiteColours={{ face: '#E8B84B', fold: '#C08F2E', tail: '#2C42B4' }}
         />
         <KiteKid
           cls="hp-kid--b"
           s={1.14}
-          dur={34}
-          delay={-15}
+          dur={19}
+          delay={-11}
+          x0={-80}
+          x1={1420}
+          gy={660}
           hand={[38, -111]}
           kite={[-178, -224]}
           palette={{
@@ -446,7 +588,10 @@ export function HeroPlate() {
             shirtLit: '#84C1BA',
             pants: '#E0B44C',
             pantsShade: '#BE9236',
+            pantsFar: '#7E5D1C',
+            skinFar: '#A87F53',
             shoe: '#3A2E22',
+            shoeFar: '#291F16',
           }}
           kiteColours={{ face: '#F0E2C2', fold: '#E07A5F', tail: '#5D9E97' }}
         />
