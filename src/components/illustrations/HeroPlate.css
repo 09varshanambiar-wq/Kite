@@ -70,49 +70,6 @@
   overflow: visible;
 }
 
-/* ---------------- children with kites ---------------- */
-/* The whole group — child, string and kite — crosses on one animation,
-   so the three can never drift apart. */
-.hp-kid {
-  animation-name: hp-kid-cross;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-}
-
-@keyframes hp-kid-cross {
-  0% { transform: translate(var(--hp-x0), var(--hp-gy)); opacity: 0; }
-  5% { opacity: 1; }
-  94% { opacity: 1; }
-  100% { transform: translate(var(--hp-x1), var(--hp-gy)); opacity: 0; }
-}
-
-/* One pose of the stride is visible at a time. Swapping drawn poses,
-   rather than tweening joints, matches the plate's stop-motion look. */
-.hp-frame {
-  opacity: 0;
-  animation-name: hp-frame;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-}
-
-@keyframes hp-frame {
-  0%, 16.6% { opacity: 1; }
-  16.7%, 100% { opacity: 0; }
-}
-
-/* The group's bounding box ends at the child's hand, so rotating about
-   its bottom-right corner pivots the kite around her fist. */
-.hp-kid-line {
-  transform-box: fill-box;
-  transform-origin: 100% 100%;
-  animation: hp-kite-swing 4.8s ease-in-out infinite;
-}
-
-@keyframes hp-kite-swing {
-  0%, 100% { transform: rotate(-3.4deg); }
-  50% { transform: rotate(3.4deg); }
-}
-
 /* ---------------- pinwheels ---------------- */
 /* The one thing in the scene that spins rather than drifts, which is
    what makes the whole frame read as breezy. Linear, because a pinwheel
@@ -270,7 +227,6 @@
   .hp-bubble { opacity: 1; transform: none; }
   .hp-sparkle { opacity: 0.8; }
   .hp-flutter { opacity: 1; }
-  .hp-kid { opacity: 1; transform: translate(var(--hp-x0), var(--hp-gy)); }
   .hp-leaf-track { opacity: 1; }
 }
 
