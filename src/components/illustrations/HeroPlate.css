@@ -136,21 +136,23 @@
   overflow: visible;
 }
 
-/* ---------------- wind ---------------- */
-.hp-gust {
-  opacity: 0;
-  animation: hp-gust-drift 9s linear infinite;
+/* ---------------- pinwheels ---------------- */
+/* The one thing in the scene that spins rather than drifts, which is
+   what makes the whole frame read as breezy. Linear, because a pinwheel
+   carries no weight and never eases. */
+.hp-pinwheel-rig {
+  filter: drop-shadow(0 4px 6px rgba(52, 62, 40, 0.22));
 }
-.hp-gust--1 { animation-duration: 9s; animation-delay: 0s; }
-.hp-gust--2 { animation-duration: 12s; animation-delay: -3.5s; }
-.hp-gust--3 { animation-duration: 10.5s; animation-delay: -6s; }
-.hp-gust--4 { animation-duration: 14s; animation-delay: -9s; }
 
-@keyframes hp-gust-drift {
-  0% { transform: translateX(-220px); opacity: 0; }
-  12% { opacity: 0.8; }
-  70% { opacity: 0.55; }
-  100% { transform: translateX(1820px); opacity: 0; }
+.hp-pinwheel {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: hp-spin linear infinite;
+}
+
+@keyframes hp-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* ---------------- birds ---------------- */
@@ -186,21 +188,81 @@
   50% { transform: scaleY(0.42); }
 }
 
-/* ---------------- foreground stems ---------------- */
-.hp-stem {
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-  animation: hp-lean 6.4s ease-in-out infinite;
+/* ---------------- leaves on the wind ---------------- */
+/* Two nested animations: the track carries the leaf across the frame,
+   the inner group tumbles and bobs. Splitting them means the tumble
+   never fights the crossing. */
+.hp-leaf-track {
+  animation-name: hp-leaf-cross;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 }
 
-@keyframes hp-lean {
-  0%, 100% { transform: rotate(-0.9deg); }
-  50% { transform: rotate(1.5deg); }
+@keyframes hp-leaf-cross {
+  0% { transform: translate(-60px, var(--hp-ly, 240px)); opacity: 0; }
+  8% { opacity: 0.95; }
+  88% { opacity: 0.95; }
+  100% { transform: translate(1660px, var(--hp-ly, 240px)); opacity: 0; }
+}
+
+.hp-leaf {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: hp-leaf-tumble 2.7s ease-in-out infinite;
+}
+
+@keyframes hp-leaf-tumble {
+  0%, 100% { transform: translateY(0) rotate(-14deg); }
+  35% { transform: translateY(-13px) rotate(22deg); }
+  70% { transform: translateY(9px) rotate(-6deg); }
+}
+
+/* ---------------- butterflies ---------------- */
+/* The crossing and the wingbeat are separate animations so a slow
+   traveller can still have fast wings. */
+.hp-flutter {
+  animation-name: hp-flutter-cross;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes hp-flutter-cross {
+  0% { transform: translate(-40px, var(--hp-by, 600px)); }
+  25% { transform: translate(380px, calc(var(--hp-by, 600px) - 34px)); }
+  50% { transform: translate(790px, var(--hp-by, 600px)); }
+  75% { transform: translate(1210px, calc(var(--hp-by, 600px) - 26px)); }
+  100% { transform: translate(1630px, var(--hp-by, 600px)); }
+}
+
+.hp-wing {
+  transform-box: fill-box;
+  animation: hp-wingbeat 0.3s ease-in-out infinite;
+}
+.hp-wing--l { transform-origin: 100% 50%; }
+.hp-wing--r { transform-origin: 0% 50%; }
+
+@keyframes hp-wingbeat {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.36); }
+}
+
+/* ---------------- sparkles ---------------- */
+.hp-sparkle {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation: hp-twinkle 4.4s ease-in-out infinite;
+}
+
+@keyframes hp-twinkle {
+  0%, 58%, 100% { opacity: 0; transform: scale(0.25) rotate(0deg); }
+  72%, 82% { opacity: 0.92; transform: scale(1) rotate(45deg); }
 }
 
 /* ---------------- conversation ---------------- */
 /* The bubbles alternate, so the pair reads as taking turns rather than
-   talking over each other. */
+   talking over each other. They grow from the tail, which is where the
+   speaker is. */
 .hp-bubble {
   transform-box: fill-box;
   transform-origin: 50% 100%;
@@ -215,15 +277,21 @@
   6%, 38% { opacity: 1; transform: scale(1); }
 }
 
-.hp-dots circle {
-  animation: hp-dot 1.25s ease-in-out infinite;
+/* the lines type themselves in, one after another */
+.hp-bubble-lines rect {
+  transform-box: fill-box;
+  transform-origin: 0% 50%;
+  animation: hp-type 7.6s ease-in-out infinite;
 }
-.hp-dots circle:nth-child(2) { animation-delay: 0.16s; }
-.hp-dots circle:nth-child(3) { animation-delay: 0.32s; }
+.hp-bubble-lines rect:nth-child(2) { animation-delay: 0.34s; }
+.hp-bubble-lines rect:nth-child(3) { animation-delay: 0.68s; }
+.hp-bubble--right .hp-bubble-lines rect { animation-delay: -3.8s; }
+.hp-bubble--right .hp-bubble-lines rect:nth-child(2) { animation-delay: -3.46s; }
+.hp-bubble--right .hp-bubble-lines rect:nth-child(3) { animation-delay: -3.12s; }
 
-@keyframes hp-dot {
-  0%, 100% { opacity: 0.35; }
-  50% { opacity: 1; }
+@keyframes hp-type {
+  0%, 3% { transform: scaleX(0); }
+  10%, 100% { transform: scaleX(1); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -232,12 +300,14 @@
     animation: none !important;
   }
   .hp-bubble { opacity: 1; transform: none; }
-  .hp-gust { opacity: 0.5; }
+  .hp-sparkle { opacity: 0.8; }
+  .hp-flutter { opacity: 1; }
+  .hp-leaf-track { opacity: 1; }
 }
 
 /* ---------------- clouds ---------------- */
-/* Far slower than the gusts — clouds that raced would make the sky feel
-   frantic rather than breezy. */
+/* Far slower than everything else — clouds that raced would make the sky
+   feel frantic rather than breezy. */
 .hp-cloud {
   animation: hp-cloud-drift linear infinite;
   opacity: 0.9;

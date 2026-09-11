@@ -11,8 +11,9 @@ import './HeroPlate.css';
  * background and keys it out, because the image models return JPEG and
  * JPEG carries no alpha channel.
  *
- * Everything is placed in percentages of the plate's own 1584x672 frame,
- * so the composite stays registered at any width.
+ * Everything is placed in the plate's own 1584x672 frame, so the
+ * composite stays registered at any width. Coordinates below were
+ * measured off the plate against a calibration grid.
  */
 
 const BIRDS_A = [
@@ -28,21 +29,114 @@ const BIRDS_B = [
   { x: 56, y: -6, s: 0.58 },
 ];
 
-/** Foreground stems that lean with the same wind as everything else. */
-const STEM_BASE = 668;
-const STEMS = [
-  { x: 60, h: 74, petal: '#E07A5F' },
-  { x: 152, h: 56, petal: null },
-  { x: 266, h: 66, petal: '#E8B84B' },
-  { x: 372, h: 48, petal: null },
-  { x: 700, h: 60, petal: '#E07A5F' },
-  { x: 820, h: 72, petal: '#F0A088' },
-  { x: 1050, h: 52, petal: null },
-  { x: 1196, h: 68, petal: '#E8B84B' },
-  { x: 1336, h: 58, petal: '#E07A5F' },
-  { x: 1472, h: 76, petal: null },
-  { x: 1546, h: 56, petal: '#E8B84B' },
+/* ---------------- pinwheels ---------------- */
+/* Each sail is two faces meeting at a fold, which is what separates a
+   paper pinwheel from a flat daisy: the lit face catches the light, the
+   folded-under face sits in its shadow. */
+const VANE_COLOURS = ['#E8B84B', '#7FB05C', '#A897C9', '#E07A5F', '#5D9E97', '#EFDCB2'];
+
+function shade(hex: string, amount: number) {
+  const n = parseInt(hex.slice(1), 16);
+  const mix = (c: number) => Math.round(c * (1 - amount));
+  return `#${[(n >> 16) & 255, (n >> 8) & 255, n & 255]
+    .map((c) => mix(c).toString(16).padStart(2, '0'))
+    .join('')}`;
+}
+
+/* The lit face runs from a sharp outer point back to the fold line; the
+   fold face is the paper curled under toward the next sail. Together
+   they span 70 degrees on a 60-degree pitch, so the sails overlap the
+   way a real pinwheel's do. */
+function litFace(r: number) {
+  return [
+    `M0 0`,
+    `L ${r * 0.53} ${-r * 0.85}`,
+    `Q ${r * 0.95} ${-r * 0.62} ${r * 0.97} ${-r * 0.24}`,
+    `Z`,
+  ].join(' ');
+}
+
+function foldFace(r: number) {
+  return [
+    `M0 0`,
+    `L ${r * 0.97} ${-r * 0.24}`,
+    `Q ${r * 0.78} ${r * 0.14} ${r * 0.42} ${r * 0.3}`,
+    `Q ${r * 0.2} ${r * 0.16} 0 0`,
+    `Z`,
+  ].join(' ');
+}
+
+function Pinwheel({
+  cx,
+  cy,
+  r,
+  spin,
+  poleTo,
+}: {
+  cx: number;
+  cy: number;
+  r: number;
+  spin: number;
+  poleTo: number;
+}) {
+  const lit = litFace(r);
+  const fold = foldFace(r);
+  const poleW = Math.max(5, r * 0.09);
+  return (
+    <g className="hp-pinwheel-rig">
+      <rect x={cx - poleW / 2} y={cy} width={poleW} height={poleTo - cy} fill="#C9AC7E" />
+      <rect x={cx - poleW / 2} y={cy} width={poleW * 0.34} height={poleTo - cy} fill="#A5875C" />
+      <g transform={`translate(${cx} ${cy})`}>
+        <g className="hp-pinwheel" style={{ animationDuration: `${spin}s` }}>
+          {VANE_COLOURS.map((fill, i) => (
+            <g key={i} transform={`rotate(${i * 60})`}>
+              <path d={lit} fill={fill} />
+              <path d={fold} fill={shade(fill, 0.24)} />
+            </g>
+          ))}
+          <circle r={r * 0.14} fill="#B85F45" />
+          <circle r={r * 0.14} fill="#7E3A2A" clipPath="url(#hp-boss-shade)" />
+          <circle r={r * 0.05} fill="#F6EBD4" />
+        </g>
+      </g>
+    </g>
+  );
+}
+
+/* ---------------- drifting leaves ---------------- */
+/* Replaces the old white speed-lines: wind you can see because it is
+   carrying something, rather than wind drawn as streaks. */
+const LEAVES = [
+  { y: 214, s: 1.7, dur: 13, delay: 0, tilt: 9, fill: '#6F9B4C' },
+  { y: 302, s: 1.35, dur: 17, delay: -6, tilt: 15, fill: '#8DB35F' },
+  { y: 168, s: 1.05, dur: 21, delay: -13, tilt: 7, fill: '#C6A24B' },
+  { y: 392, s: 1.5, dur: 15, delay: -9.5, tilt: 12, fill: '#7FAE57' },
+  { y: 262, s: 1.2, dur: 19, delay: -3, tilt: 11, fill: '#CE7F52' },
+  { y: 460, s: 1.6, dur: 12, delay: -7.5, tilt: 18, fill: '#B8913F' },
+  { y: 128, s: 0.95, dur: 24, delay: -16, tilt: 5, fill: '#87AE63' },
+  { y: 352, s: 1.25, dur: 18, delay: -11, tilt: 14, fill: '#D89A5C' },
 ];
+
+const LEAF_D = 'M0 0 C 6 -7.5, 17 -7.5, 22 0 C 17 7.5, 6 7.5, 0 0 Z';
+
+/* ---------------- sparkles ---------------- */
+const SPARKLES = [
+  { x: 118, y: 626, s: 1, delay: 0 },
+  { x: 352, y: 648, s: 0.75, delay: -1.4 },
+  { x: 612, y: 620, s: 0.9, delay: -2.6 },
+  { x: 868, y: 652, s: 0.7, delay: -0.7 },
+  { x: 1124, y: 630, s: 0.85, delay: -3.3 },
+  { x: 1372, y: 656, s: 0.65, delay: -1.9 },
+  { x: 1508, y: 614, s: 0.8, delay: -2.2 },
+];
+
+/* ---------------- butterflies ---------------- */
+const BUTTERFLIES = [
+  { y: 592, s: 1, dur: 22, delay: 0, fill: '#E8B84B' },
+  { y: 634, s: 0.78, dur: 29, delay: -14, fill: '#D9836A' },
+];
+
+const SPARKLE_D = 'M0 -11 Q 1.8 -1.8 11 0 Q 1.8 1.8 0 11 Q -1.8 1.8 -11 0 Q -1.8 -1.8 0 -11 Z';
 
 function Bird({ x, y, s, delay }: { x: number; y: number; s: number; delay: number }) {
   return (
@@ -56,6 +150,38 @@ function Bird({ x, y, s, delay }: { x: number; y: number; s: number; delay: numb
           strokeLinecap="round"
         />
       </g>
+    </g>
+  );
+}
+
+/* Rounded speech bubble with a tail that lands on a given point. The
+   tail is built from the body's bottom edge so it always reads as part
+   of the same sheet of paper. */
+function bubblePath(x: number, y: number, w: number, h: number, tailX: number, tipX: number, tipY: number) {
+  const r = 14;
+  return [
+    `M${x + r} ${y}`,
+    `H${x + w - r}`,
+    `A${r} ${r} 0 0 1 ${x + w} ${y + r}`,
+    `V${y + h - r}`,
+    `A${r} ${r} 0 0 1 ${x + w - r} ${y + h}`,
+    `H${tailX + 13}`,
+    `L${tipX} ${tipY}`,
+    `L${tailX - 4} ${y + h}`,
+    `H${x + r}`,
+    `A${r} ${r} 0 0 1 ${x} ${y + h - r}`,
+    `V${y + r}`,
+    `A${r} ${r} 0 0 1 ${x + r} ${y}`,
+    `Z`,
+  ].join(' ');
+}
+
+function BubbleLines({ x, y, widths }: { x: number; y: number; widths: number[] }) {
+  return (
+    <g className="hp-bubble-lines">
+      {widths.map((w, i) => (
+        <rect key={i} x={x} y={y + i * 13} width={w} height={5} rx="2.5" fill="#A9A08E" />
+      ))}
     </g>
   );
 }
@@ -89,7 +215,14 @@ export function HeroPlate() {
         viewBox="0 0 1584 672"
         preserveAspectRatio="xMidYMax slice"
       >
-        {/* the runner's line, bobbing in step with the runner */}
+        <defs>
+          {/* shades the underside of every pinwheel's centre boss */}
+          <clipPath id="hp-boss-shade">
+            <rect x="-40" y="0" width="80" height="40" />
+          </clipPath>
+        </defs>
+
+        {/* the runner's line, travelling with her */}
         <line
           className="hp-line"
           x1="332"
@@ -101,7 +234,7 @@ export function HeroPlate() {
           opacity="0.85"
         />
 
-        {/* ---- clouds, drifting far slower than the gusts ---- */}
+        {/* ---- clouds, drifting far slower than anything else ---- */}
         <g className="hp-clouds">
           <g className="hp-cloud hp-cloud--1">
             <ellipse cx="0" cy="0" rx="62" ry="22" fill="#FFFDF6" />
@@ -120,14 +253,6 @@ export function HeroPlate() {
           </g>
         </g>
 
-        {/* ---- wind across the sky ---- */}
-        <g className="hp-wind" stroke="#FFFFFF" fill="none" strokeLinecap="round" opacity="0.75">
-          <path className="hp-gust hp-gust--1" d="M0 214 q 46 -11 96 -2 q 34 6 74 -4" strokeWidth="3.4" />
-          <path className="hp-gust hp-gust--2" d="M0 286 q 38 -9 80 -1 q 28 5 60 -3" strokeWidth="2.8" />
-          <path className="hp-gust hp-gust--3" d="M0 148 q 52 -12 108 -2 q 38 7 82 -5" strokeWidth="3" />
-          <path className="hp-gust hp-gust--4" d="M0 372 q 32 -7 68 -1 q 24 4 52 -3" strokeWidth="2.4" />
-        </g>
-
         {/* ---- birds ---- */}
         <g className="hp-flock hp-flock--a">
           {BIRDS_A.map((b, i) => (
@@ -140,49 +265,67 @@ export function HeroPlate() {
           ))}
         </g>
 
-        {/* ---- foreground stems, leaning in the same wind ---- */}
-        <g className="hp-stems">
-          {STEMS.map((s, i) => (
-            <g key={i} className="hp-stem" style={{ animationDelay: `${(i % 5) * -0.9}s` }}>
-              <path
-                d={`M${s.x} ${STEM_BASE} q ${s.h * 0.34} -${s.h * 0.7} ${s.h * 0.62} -${s.h}`}
-                stroke="#5B8C45"
-                strokeWidth="4"
-                fill="none"
-                strokeLinecap="round"
-              />
-              {s.petal && <circle cx={s.x + s.h * 0.62} cy={STEM_BASE - s.h} r="8" fill={s.petal} />}
-              {s.petal && <circle cx={s.x + s.h * 0.62} cy={STEM_BASE - s.h} r="3.2" fill="#FBF6EA" />}
+        {/* ---- leaves carried on the wind ---- */}
+        {LEAVES.map((l, i) => (
+          <g
+            key={i}
+            className="hp-leaf-track"
+            style={{ animationDuration: `${l.dur}s`, animationDelay: `${l.delay}s`, ['--hp-ly' as string]: `${l.y}px` }}
+          >
+            <g className="hp-leaf" style={{ animationDelay: `${l.delay}s` }}>
+              <g transform={`rotate(${l.tilt}) scale(${l.s})`}>
+                <path d={LEAF_D} fill={l.fill} />
+                <path d="M0 0 H22" stroke="#4F6B34" strokeWidth="1" opacity="0.5" />
+              </g>
             </g>
-          ))}
-        </g>
+          </g>
+        ))}
 
         {/* ---- the couple's conversation, taking turns ---- */}
-        {/* tail lands on the man in mustard at (583, 465) */}
+        {/* tail lands on the seated man in mustard, head measured at (578, 468) */}
         <g className="hp-bubble hp-bubble--left">
-          <path
-            d="M486 356 H594 A16 16 0 0 1 610 372 V408 A16 16 0 0 1 594 424 H590 L578 450 L566 424 H486 A16 16 0 0 1 470 408 V372 A16 16 0 0 1 486 356 Z"
-            fill="#FFFDF6"
-          />
-          <g className="hp-dots">
-            <circle cx="515" cy="390" r="5.5" fill="#2C42B4" />
-            <circle cx="540" cy="390" r="5.5" fill="#2C42B4" />
-            <circle cx="565" cy="390" r="5.5" fill="#2C42B4" />
-          </g>
+          <path d={bubblePath(452, 350, 130, 58, 548, 574, 452)} fill="#FFFDF6" />
+          <BubbleLines x={474} y={367} widths={[86, 66, 44]} />
         </g>
 
-        {/* tail lands on the woman in coral at (688, 465) */}
+        {/* tail lands on the seated woman in coral, head measured at (690, 470) */}
         <g className="hp-bubble hp-bubble--right">
-          <path
-            d="M676 340 H780 A16 16 0 0 1 796 356 V390 A16 16 0 0 1 780 406 H716 L692 434 L700 406 H676 A16 16 0 0 1 660 390 V356 A16 16 0 0 1 676 340 Z"
-            fill="#FFFDF6"
-          />
-          <g className="hp-dots">
-            <circle cx="700" cy="373" r="5" fill="#E07A5F" />
-            <circle cx="724" cy="373" r="5" fill="#E07A5F" />
-            <circle cx="748" cy="373" r="5" fill="#E07A5F" />
-          </g>
+          <path d={bubblePath(636, 334, 122, 54, 664, 688, 452)} fill="#FFFDF6" />
+          <BubbleLines x={656} y={351} widths={[80, 56, 68]} />
         </g>
+
+        {/* ---- pinwheels, the fastest thing in the scene ---- */}
+        <Pinwheel cx={148} cy={470} r={60} spin={2.4} poleTo={700} />
+        <Pinwheel cx={862} cy={468} r={46} spin={3.1} poleTo={700} />
+
+        {/* ---- butterflies working the flowerbeds ---- */}
+        {BUTTERFLIES.map((b, i) => (
+          <g
+            key={i}
+            className="hp-flutter"
+            style={{ animationDuration: `${b.dur}s`, animationDelay: `${b.delay}s`, ['--hp-by' as string]: `${b.y}px` }}
+          >
+            <g transform={`scale(${b.s})`}>
+              <g className="hp-wing hp-wing--l">
+                <path d="M0 -4 C -7 -21, -24 -23, -26 -10 C -27 -1, -15 1, 0 -1 Z" fill={b.fill} />
+                <path d="M0 0 C -9 5, -20 11, -17 18 C -13 24, -4 13, 0 5 Z" fill={shade(b.fill, 0.18)} />
+              </g>
+              <g className="hp-wing hp-wing--r">
+                <path d="M0 -4 C 7 -21, 24 -23, 26 -10 C 27 -1, 15 1, 0 -1 Z" fill={b.fill} />
+                <path d="M0 0 C 9 5, 20 11, 17 18 C 13 24, 4 13, 0 5 Z" fill={shade(b.fill, 0.18)} />
+              </g>
+              <ellipse cx="0" cy="1" rx="1.8" ry="8" fill="#4A3B2A" />
+              <path d="M-1 -7 C -3 -12, -5 -13, -6 -14 M1 -7 C 3 -12, 5 -13, 6 -14" stroke="#4A3B2A" strokeWidth="1" fill="none" strokeLinecap="round" />
+            </g>
+          </g>
+        ))}
+
+        {/* ---- sparkles through the flowerbeds ---- */}
+        {SPARKLES.map((s, i) => (
+          <g key={i} transform={`translate(${s.x} ${s.y}) scale(${s.s})`}>
+            <path className="hp-sparkle" d={SPARKLE_D} fill="#FFFDF6" style={{ animationDelay: `${s.delay}s` }} />
+          </g>
+        ))}
       </svg>
     </div>
   );
