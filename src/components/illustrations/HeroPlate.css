@@ -70,6 +70,60 @@
   overflow: visible;
 }
 
+/* ---------------- children with kites ---------------- */
+/* The whole group — child, string and kite — crosses on one animation,
+   so the three can never drift apart. */
+.hp-kid {
+  animation-name: hp-kid-cross;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.hp-kid--a {
+  --hp-x0: 90px;
+  --hp-x1: 1560px;
+  --hp-gy: 618px;
+}
+
+.hp-kid--b {
+  --hp-x0: -80px;
+  --hp-x1: 1420px;
+  --hp-gy: 660px;
+}
+
+@keyframes hp-kid-cross {
+  0% { transform: translate(var(--hp-x0), var(--hp-gy)); opacity: 0; }
+  5% { opacity: 1; }
+  94% { opacity: 1; }
+  100% { transform: translate(var(--hp-x1), var(--hp-gy)); opacity: 0; }
+}
+
+/* The shadow is outside this node, so it stays on the ground while she
+   bobs above it. */
+.hp-kid-bob {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: hp-kid-bob 0.66s ease-in-out infinite;
+}
+
+@keyframes hp-kid-bob {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-5px) rotate(2deg); }
+}
+
+/* The group's bounding box ends at the child's hand, so rotating about
+   its bottom-right corner pivots the kite around her fist. */
+.hp-kid-line {
+  transform-box: fill-box;
+  transform-origin: 100% 100%;
+  animation: hp-kite-swing 4.8s ease-in-out infinite;
+}
+
+@keyframes hp-kite-swing {
+  0%, 100% { transform: rotate(-3.4deg); }
+  50% { transform: rotate(3.4deg); }
+}
+
 /* ---------------- pinwheels ---------------- */
 /* The one thing in the scene that spins rather than drifts, which is
    what makes the whole frame read as breezy. Linear, because a pinwheel
@@ -211,21 +265,12 @@
   6%, 38% { opacity: 1; transform: scale(1); }
 }
 
-/* the lines type themselves in, one after another */
-.hp-bubble-lines rect {
-  transform-box: fill-box;
-  transform-origin: 0% 50%;
-  animation: hp-type 7.6s ease-in-out infinite;
-}
-.hp-bubble-lines rect:nth-child(2) { animation-delay: 0.34s; }
-.hp-bubble-lines rect:nth-child(3) { animation-delay: 0.68s; }
-.hp-bubble--right .hp-bubble-lines rect { animation-delay: -3.8s; }
-.hp-bubble--right .hp-bubble-lines rect:nth-child(2) { animation-delay: -3.46s; }
-.hp-bubble--right .hp-bubble-lines rect:nth-child(3) { animation-delay: -3.12s; }
-
-@keyframes hp-type {
-  0%, 3% { transform: scaleX(0); }
-  10%, 100% { transform: scaleX(1); }
+.hp-bubble-text {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: var(--weight-medium);
+  fill: #6E6658;
+  letter-spacing: -0.01em;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -236,6 +281,7 @@
   .hp-bubble { opacity: 1; transform: none; }
   .hp-sparkle { opacity: 0.8; }
   .hp-flutter { opacity: 1; }
+  .hp-kid { opacity: 1; transform: translate(var(--hp-x0), var(--hp-gy)); }
   .hp-leaf-track { opacity: 1; }
 }
 

@@ -138,6 +138,138 @@ const BUTTERFLIES = [
 
 const SPARKLE_D = 'M0 -11 Q 1.8 -1.8 11 0 Q 1.8 1.8 0 11 Q -1.8 1.8 -11 0 Q -1.8 -1.8 0 -11 Z';
 
+/* ---------------- children flying kites ---------------- */
+/* Drawn as faceted planes rather than rounded strokes, because the
+   plate they stand on is a low-poly render: a figure built from
+   tapering polygons with a lit and a shaded face on every limb sits in
+   that world, and one built from round-capped lines does not.
+   Local units: feet on y=0, facing right, about 94 tall. */
+interface ChildPalette {
+  skin: string;
+  skinShade: string;
+  hair: string;
+  hairShade: string;
+  shirt: string;
+  shirtShade: string;
+  shirtLit: string;
+  pants: string;
+  pantsShade: string;
+  shoe: string;
+}
+
+function ChildRunning({ c, id }: { c: ChildPalette; id: string }) {
+  return (
+    <g>
+      <defs>
+        {/* The plate is a soft render, not flat colour, so each part
+            carries a gradient from its lit edge into its shade; the
+            facet polygons on top only sharpen the folds. */}
+        <linearGradient id={`${id}-shirt`} x1="0" y1="0" x2="1" y2="0.7">
+          <stop offset="0" stopColor={c.shirtLit} />
+          <stop offset="0.55" stopColor={c.shirt} />
+          <stop offset="1" stopColor={c.shirtShade} />
+        </linearGradient>
+        <linearGradient id={`${id}-pants`} x1="0" y1="0" x2="1" y2="0.5">
+          <stop offset="0" stopColor={c.pants} />
+          <stop offset="1" stopColor={c.pantsShade} />
+        </linearGradient>
+        <linearGradient id={`${id}-skin`} x1="0.1" y1="0" x2="1" y2="0.8">
+          <stop offset="0" stopColor={c.skin} />
+          <stop offset="1" stopColor={c.skinShade} />
+        </linearGradient>
+      </defs>
+
+      {/* trailing leg and arm sit behind the body */}
+      <path d="M-9 -42 L1 -42 L-5 -25 L-16 -9 L-25 -14 L-13 -27 Z" fill={c.pantsShade} />
+      <path d="M-25 -14 L-16 -9 L-19 -1 L-30 -6 Z" fill={c.shoe} />
+      <path d="M-13 -66 L-3 -63 L-15 -52 L-25 -43 L-31 -50 L-20 -58 Z" fill={c.skinShade} />
+
+      {/* leading leg */}
+      <path d="M-1 -42 L11 -42 L18 -22 L20 -4 L11 -4 L8 -22 Z" fill={`url(#${id}-pants)`} />
+      <path d="M8 -42 L11 -42 L18 -22 L20 -4 L16 -4 L14 -22 Z" fill={c.pantsShade} opacity="0.55" />
+      <path d="M11 -4 L20 -4 L24 2 L9 2 Z" fill={c.shoe} />
+
+      {/* torso and sleeves */}
+      <path d="M-14 -38 L14 -38 L17 -68 L-11 -68 Z" fill={`url(#${id}-shirt)`} />
+      <path d="M7 -38 L14 -38 L17 -68 L10 -68 Z" fill={c.shirtShade} opacity="0.45" />
+      <path d="M-11 -68 L-3 -68 L-5 -55 L-15 -57 Z" fill={c.shirtLit} />
+      <path d="M9 -68 L17 -68 L17 -55 L8 -56 Z" fill={c.shirtShade} />
+
+      {/* the arm up the string: upper arm, forearm and a fist that
+          actually closes on the line */}
+      <path d="M8 -59 L19 -63 L27 -77 L20 -81 L14 -70 Z" fill={`url(#${id}-skin)`} />
+      <path d="M20 -81 L27 -77 L31 -90 L24 -93 Z" fill={c.skin} />
+      <path d="M23 -90 L32 -93 L34 -99 L25 -100 Z" fill={c.skinShade} />
+
+      <path d="M1 -73 L12 -73 L12 -63 L1 -63 Z" fill={c.skinShade} />
+
+      {/* head — deliberately large, the way a child's is */}
+      <path d="M8 -97 L19 -92 L22 -81 L16 -69 L5 -68 L-3 -76 L-3 -89 Z" fill={`url(#${id}-skin)`} />
+      <path d="M14 -94 L19 -92 L22 -81 L16 -69 L12 -69 Z" fill={c.skinShade} opacity="0.7" />
+      {/* the face plane catches the light */}
+      <path d="M2 -88 L13 -85 L13 -73 L4 -71 L-1 -77 Z" fill={c.skin} opacity="0.55" />
+      <path d="M8 -98 L20 -92 L22 -83 L14 -87 L2 -85 L-3 -79 L-3 -89 Z" fill={c.hair} />
+      <path d="M14 -94 L20 -92 L22 -83 L15 -86 Z" fill={c.hairShade} />
+      <path d="M6 -97 L15 -93 L12 -89 L2 -87 L-1 -90 Z" fill={c.skin} opacity="0.16" />
+    </g>
+  );
+}
+
+function Kite({ face, fold, tail }: { face: string; fold: string; tail: string }) {
+  return (
+    <g>
+      <path d="M0 -32 L21 0 L0 32 L-21 0 Z" fill={face} />
+      <path d="M0 -32 L21 0 L0 32 Z" fill={fold} />
+      <path d="M0 -32 L0 32 M-21 0 L21 0" stroke="#FFFDF6" strokeWidth="1.5" opacity="0.5" />
+      <path
+        d="M0 32 q 9 18 -4 31 q -11 15 3 29"
+        fill="none"
+        stroke={tail}
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+      <path d="M-6 47 L6 43 M-3 67 L9 71 M-4 87 L8 91" stroke={tail} strokeWidth="4.5" strokeLinecap="round" />
+    </g>
+  );
+}
+
+interface KidProps {
+  cls: string;
+  s: number;
+  dur: number;
+  delay: number;
+  hand: [number, number];
+  kite: [number, number];
+  palette: ChildPalette;
+  kiteColours: { face: string; fold: string; tail: string };
+}
+
+/* Child, string and kite travel as one group, so the three can never
+   drift apart. The group that swings is anchored at the child's hand —
+   its bounding box ends exactly there — so rotating it about its
+   bottom-right corner swings the kite through an arc while the string
+   stays in her fist. */
+function KiteKid({ cls, s, dur, delay, hand, kite, palette, kiteColours }: KidProps) {
+  return (
+    <g className={`hp-kid ${cls}`} style={{ animationDuration: `${dur}s`, animationDelay: `${delay}s` }}>
+      <ellipse cx="0" cy="2" rx={17 * s} ry={4.5 * s} fill="#2F4A2A" opacity="0.16" />
+      <g transform={`scale(${s})`}>
+        <g className="hp-kid-bob">
+          <ChildRunning c={palette} id={cls} />
+        </g>
+      </g>
+      <g transform={`translate(${hand[0]} ${hand[1]})`}>
+        <g className="hp-kid-line" style={{ animationDelay: `${delay / 3}s` }}>
+          <line x1="0" y1="0" x2={kite[0]} y2={kite[1]} stroke="#C3B79C" strokeWidth="1.5" opacity="0.85" />
+          <g transform={`translate(${kite[0]} ${kite[1]})`}>
+            <Kite {...kiteColours} />
+          </g>
+        </g>
+      </g>
+    </g>
+  );
+}
+
 function Bird({ x, y, s, delay }: { x: number; y: number; s: number; delay: number }) {
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
@@ -176,13 +308,11 @@ function bubblePath(x: number, y: number, w: number, h: number, tailX: number, t
   ].join(' ');
 }
 
-function BubbleLines({ x, y, widths }: { x: number; y: number; widths: number[] }) {
+function BubbleText({ x, y, children }: { x: number; y: number; children: string }) {
   return (
-    <g className="hp-bubble-lines">
-      {widths.map((w, i) => (
-        <rect key={i} x={x} y={y + i * 13} width={w} height={5} rx="2.5" fill="#A9A08E" />
-      ))}
-    </g>
+    <text className="hp-bubble-text" x={x} y={y} textAnchor="middle">
+      {children}
+    </text>
   );
 }
 
@@ -263,19 +393,63 @@ export function HeroPlate() {
         {/* ---- the couple's conversation, taking turns ---- */}
         {/* tail lands on the seated man in mustard, head measured at (578, 468) */}
         <g className="hp-bubble hp-bubble--left">
-          <path d={bubblePath(452, 350, 130, 58, 548, 574, 452)} fill="#FFFDF6" />
-          <BubbleLines x={474} y={367} widths={[86, 66, 44]} />
+          <path d={bubblePath(442, 346, 150, 54, 548, 574, 452)} fill="#FFFDF6" />
+          <BubbleText x={517} y={379}>Think it&#8217;ll fly?</BubbleText>
         </g>
 
         {/* tail lands on the seated woman in coral, head measured at (690, 470) */}
         <g className="hp-bubble hp-bubble--right">
-          <path d={bubblePath(636, 334, 122, 54, 664, 688, 452)} fill="#FFFDF6" />
-          <BubbleLines x={656} y={351} widths={[80, 56, 68]} />
+          <path d={bubblePath(628, 342, 140, 50, 664, 688, 452)} fill="#FFFDF6" />
+          <BubbleText x={698} y={373}>It already is.</BubbleText>
         </g>
 
         {/* ---- pinwheels, the fastest thing in the scene ---- */}
         <Pinwheel cx={148} cy={470} r={60} spin={2.4} poleTo={700} />
         <Pinwheel cx={862} cy={468} r={46} spin={3.1} poleTo={700} />
+
+        {/* ---- two children running their kites across the field ---- */}
+        <KiteKid
+          cls="hp-kid--a"
+          s={1.02}
+          dur={27}
+          delay={0}
+          hand={[34, -99]}
+          kite={[-186, -172]}
+          palette={{
+            skin: '#D9A26E',
+            skinShade: '#B57F4D',
+            hair: '#4A3524',
+            hairShade: '#33240F',
+            shirt: '#E0826A',
+            shirtShade: '#B85F49',
+            shirtLit: '#F09C80',
+            pants: '#4A6FC8',
+            pantsShade: '#33509E',
+            shoe: '#3A2E22',
+          }}
+          kiteColours={{ face: '#E8B84B', fold: '#C08F2E', tail: '#2C42B4' }}
+        />
+        <KiteKid
+          cls="hp-kid--b"
+          s={1.14}
+          dur={34}
+          delay={-15}
+          hand={[38, -111]}
+          kite={[-178, -224]}
+          palette={{
+            skin: '#E8C39A',
+            skinShade: '#C49B70',
+            hair: '#6B4A32',
+            hairShade: '#4A3120',
+            shirt: '#69A9A2',
+            shirtShade: '#4A7D77',
+            shirtLit: '#84C1BA',
+            pants: '#E0B44C',
+            pantsShade: '#BE9236',
+            shoe: '#3A2E22',
+          }}
+          kiteColours={{ face: '#F0E2C2', fold: '#E07A5F', tail: '#5D9E97' }}
+        />
 
         {/* ---- butterflies working the flowerbeds ---- */}
         {BUTTERFLIES.map((b, i) => (

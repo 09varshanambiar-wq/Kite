@@ -66,14 +66,17 @@ const SCENES = {
     coloured passenger cabins, standing well back so it reads as part of the
     fair. Low-poly faceted trees. Wildflowers and tufts of grass. A large
     blue-and-mustard diamond kite high in the upper right with a long ribbon
-    tail. The wind is visibly blowing from the left: grass, flowers, trees and
-    ribbons all lean and stream to the right.
+    tail. Trees stand UPRIGHT — vertical trunks, canopies balanced evenly
+    around them, NOT bent or swept to one side. Grass and flowers stand
+    straight too. The breeze shows only in the cart's hanging ribbons, and
+    nothing is being torn loose: no leaves, petals or debris in the air.
 
     IMPORTANT OMISSIONS — these are composited in afterwards as animated
     layers, so the plate must not contain them: NO birds, NO speech or chat
     bubbles, NO kites flying in the sky (the sky holds only faint wisps), NO
-    windsock and NO windsock pole, and NO running child with a kite line.
-    Keep the anemometer mast out too. Everything else — the giant wheel, the
+    windsock and NO windsock pole, and NO children running with kite lines.
+    Keep the anemometer mast out too, and keep the air clear of loose
+    leaves and petals. Everything else — the giant wheel, the
     market cart, the kite rack and its keeper, the seated couple, the walking
     couple, the bench, the dog, the trees and the flowers — stays.`,
 
