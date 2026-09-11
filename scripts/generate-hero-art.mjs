@@ -45,7 +45,8 @@ Composition is critical: the scene sits along the BOTTOM THIRD of the frame on a
 green field with a clean horizon. The TOP 55% must be empty, uncluttered cream
 sky with nothing but a few small kites and wisps — that space is reserved for
 headline type, so keep it visually quiet and free of detail. Layered faceted
-hills in blue, teal and mustard sit behind the field. The scene runs edge to
+mountains in blue, teal and mustard rise behind the field — TALL ones, their
+peaks reaching well up the frame, not low rolling mounds. The scene runs edge to
 edge and is cropped by both side margins, continuing beyond the frame.
 
 No text, no letters, no numbers, no logos, no watermarks, no UI. No people
@@ -66,10 +67,11 @@ const SCENES = {
     coloured passenger cabins, standing well back so it reads as part of the
     fair. Low-poly faceted trees. Wildflowers and tufts of grass. A large
     blue-and-mustard diamond kite high in the upper right with a long ribbon
-    tail. Trees stand UPRIGHT — vertical trunks, canopies balanced evenly
-    around them, NOT bent or swept to one side. Grass and flowers stand
-    straight too. The breeze shows only in the cart's hanging ribbons, and
-    nothing is being torn loose: no leaves, petals or debris in the air.
+    tail. Trees stand UPRIGHT and BUSHY — vertical trunks, full rounded
+    canopies balanced evenly around them, NOT bent or swept to one side.
+    Grass and flowers stand straight too. The breeze shows only in the
+    cart's hanging ribbons, and nothing is being torn loose: no leaves,
+    petals or debris in the air.
 
     IMPORTANT OMISSIONS — these are composited in afterwards as animated
     layers, so the plate must not contain them: NO birds, NO speech or chat
