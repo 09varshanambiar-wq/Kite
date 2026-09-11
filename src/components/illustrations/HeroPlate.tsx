@@ -5,8 +5,8 @@ import './HeroPlate.css';
  * SVG layer composited over it, so the scene can actually move.
  *
  * The plate (public/hero-festival.jpg) is deliberately generated WITHOUT
- * the kites, windsock and running child — see scripts/generate-hero-art.mjs.
- * Those arrive separately as transparent sprites from
+ * the kite and windsock — see scripts/generate-hero-art.mjs. Those arrive
+ * separately as transparent sprites from
  * scripts/generate-sprites.mjs, which generates each on a magenta
  * background and keys it out, because the image models return JPEG and
  * JPEG carries no alpha channel.
@@ -201,15 +201,6 @@ export function HeroPlate() {
       <img className="hp-sprite hp-windsock" src="/sprites/windsock.png" alt="" />
       <img className="hp-sprite hp-kite-big" src="/sprites/kite.png" alt="" />
 
-      {/* The child, her kite and the string between them travel as one
-          unit at the same rate, or the line would tear away from her. */}
-      <div className="hp-track hp-track--kite">
-        <img className="hp-kite-small" src="/sprites/kiteSmall.png" alt="" />
-      </div>
-      <div className="hp-track hp-track--runner">
-        <img className="hp-runner" src="/sprites/runner.png" alt="" />
-      </div>
-
       <svg
         className="kite-plate-motion"
         viewBox="0 0 1584 672"
@@ -221,18 +212,6 @@ export function HeroPlate() {
             <rect x="-40" y="0" width="80" height="40" />
           </clipPath>
         </defs>
-
-        {/* the runner's line, travelling with her */}
-        <line
-          className="hp-line"
-          x1="332"
-          y1="470"
-          x2="474"
-          y2="268"
-          stroke="#BFB49A"
-          strokeWidth="1.6"
-          opacity="0.85"
-        />
 
         {/* ---- clouds, drifting far slower than anything else ---- */}
         <g className="hp-clouds">

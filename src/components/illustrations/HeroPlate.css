@@ -50,54 +50,6 @@
   animation: hp-kite-ride 7.4s ease-in-out infinite;
 }
 
-/* The child actually crosses the field rather than jogging on the spot.
-   Her kite and her string travel the same absolute distance over the
-   same 34s, so the three stay joined; each expresses that distance as a
-   share of its own width, which keeps them in step at any screen size.
-   The bob rides on the image inside the moving track. */
-.hp-track {
-  position: absolute;
-  animation: hp-journey 34s linear infinite;
-}
-
-.hp-track img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.hp-track--runner {
-  left: 12%;
-  top: 63.5%;
-  width: 6.6%;
-  --hp-travel: 303%; /* 20% of the plate, in units of her own width */
-}
-
-.hp-track--kite {
-  left: 23%;
-  top: 16%;
-  width: 6.2%;
-  --hp-travel: 323%; /* the same 20% of the plate */
-}
-
-.hp-track--runner img {
-  transform-origin: 50% 100%;
-  animation: hp-run 1.9s ease-in-out infinite;
-}
-
-.hp-track--kite img {
-  transform-origin: 50% 0%;
-  animation: hp-kite-ride 5.6s ease-in-out infinite;
-  animation-delay: -2.2s;
-}
-
-@keyframes hp-journey {
-  0% { transform: translateX(0); opacity: 0; }
-  5% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { transform: translateX(var(--hp-travel, 300%)); opacity: 0; }
-}
-
 @keyframes hp-pole-sway {
   0%, 100% { transform: rotate(-0.9deg); }
   50% { transform: rotate(1.1deg); }
@@ -106,24 +58,6 @@
 @keyframes hp-kite-ride {
   0%, 100% { transform: rotate(-5deg) translate(-6px, 4px); }
   50% { transform: rotate(6deg) translate(8px, -10px); }
-}
-
-@keyframes hp-run {
-  0%, 100% { transform: translateY(0) rotate(-0.8deg); }
-  50% { transform: translateY(-4%) rotate(0.8deg); }
-}
-
-/* the kite line shares the runner's timing so the two stay joined */
-.hp-line {
-  transform-box: view-box;
-  animation: hp-line-journey 34s linear infinite;
-}
-
-@keyframes hp-line-journey {
-  0% { transform: translateX(0); opacity: 0; }
-  5% { opacity: 0.85; }
-  90% { opacity: 0.85; }
-  100% { transform: translateX(317px); opacity: 0; }
 }
 
 /* ---------------- motion layer ---------------- */
